@@ -99,6 +99,8 @@ class TrustScoreUIPlugin extends GenericPlugin {
             ]
             
         );
+
+       
     }
 
 
@@ -177,15 +179,24 @@ class TrustScoreUIPlugin extends GenericPlugin {
         $publication = $submission->getCurrentPublication();
 
         // Get authors
+        $author_list = [];
         $authors = $publication->getData('authors'); // returns Author[] array
         // error_log(print_r($authors));
         foreach ($authors as $author) {
-            echo 'AUTHOR: ' . $author->getFullName() . ' (' . $author->getEmail() . ')' . "<br>\n";
+            // echo print_r($author, true);
+            // echo 'AUTHOR: ' . $author->getFullName() . ' (' . $author->getEmail() . ')' . "<br>\n";
+            $author_list[] = [
+                'id' => $author->getId(),
+                'name' => $author->getFullName(),
+                'email' => $author->getEmail(),
+                'score' => 78, // Placeholder; replace with real logic
+            ];
         }
 
         
        
         // Get reviewers
+        $reviewer_list = [];
 
         // Get DAO
         $reviewAssignmentDao = \DAORegistry::getDAO('ReviewAssignmentDAO'); /** @var ReviewAssignmentDAO $reviewAssignmentDao */
@@ -197,27 +208,21 @@ class TrustScoreUIPlugin extends GenericPlugin {
             $reviewerId = $reviewAssignment->getReviewerId();
             $reviewer = Repo::user()->get($reviewerId);
 
-            echo 'REVIEWER: ' . $reviewer->getFullName() . ' (' . $reviewer->getEmail() . ')' . "<br>\n";
+            // echo 'REVIEWER: ' . $reviewer->getFullName() . ' (' . $reviewer->getEmail() . ')' . "<br>\n";
+            $reviewer_list[] = [
+                'id' => $reviewer->getId(),
+                'name' => $reviewer->getFullName(),
+                'email' => $reviewer->getEmail(),
+                'score' => 85, // Placeholder; replace with real logic
+            ];
         }
        
-
-
-
 
         // Inject data into Vue
         $templateMgr->setState([
             'trustScores' => [
-                // 'authors' => $authorScores,
-                // 'reviewers' => $reviewerScores,
-                'authors' => [
-                    ['id' => 101, 'name' => 'Author A', 'score' => 78],
-                    ['id' => 102, 'name' => 'Author B', 'score' => 91],
-                ],
-                'reviewers' => [
-                    ['id' => 201, 'name' => 'Reviewer X', 'score' => 65],
-                    ['id' => 202, 'name' => 'Reviewer Y', 'score' => 82],
-                ]
-                
+                'authors' => $author_list,
+                'reviewers' => $reviewer_list,
             ],
         ]);
         
