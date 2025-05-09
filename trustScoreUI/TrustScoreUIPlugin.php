@@ -6,9 +6,12 @@ use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
 use APP\core\Application;
 use APP\template\TemplateManager;
+use APP\facades\Repo;
+use PKP\security\Role;
 
-use PKP\user\UserDAO;
-use APP\facades\App;
+use PKP\user\Collector;
+
+
 
 
 
@@ -22,6 +25,38 @@ class TrustScoreUIPlugin extends GenericPlugin {
 
             // Injecting tab component placeholder
             Hook::add('Template::Workflow', function($hookName, $args) {
+
+            
+               
+                // $userIds = Repo::user()
+                // ->getCollector()
+                // // ->filterByStatus([Collector::STATUS_DISABLED])
+                // ->filterByRoleIds([Role::ROLE_ID_REVIEWER])
+                // ->getMany();
+
+                // error_log(print_r($userIds));
+
+
+
+                $user = Application::get()->getRequest()->getUser();
+                $context = Application::get()->getRequest()->getContext();
+
+                $userGroups = Repo::userGroup()
+                ->getCollector()
+                ->filterByUserIds([$user->getId()])
+                ->filterByContextIds([$context->getId()])
+                ->filterByRoleIds([Role::ROLE_ID_MANAGER]) // 16 = Journal Editor
+                ->getMany();
+                
+
+                $isEditor = !$userGroups->isEmpty();
+                // error_log(print_r($isEditor));
+               
+
+              
+                if (!$isEditor) {
+                    return false; // Don't add the tab if the user is not an editor
+                }
 
                 $templateMgr = $args[1];
                 $output = & $args[2];
@@ -162,7 +197,7 @@ class TrustScoreUIPlugin extends GenericPlugin {
         return 'Bona Fide UI Plugin';
     }
 
-    
+
     /**
      * Get a description of the plugin.
      */
