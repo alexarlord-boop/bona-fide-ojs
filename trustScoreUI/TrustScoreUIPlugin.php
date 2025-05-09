@@ -10,6 +10,8 @@ use APP\facades\Repo;
 use PKP\security\Role;
 
 use PKP\user\Collector;
+use PKP\submission\reviewAssignment\ReviewAssignmentDAO;
+
 
 
 
@@ -114,22 +116,26 @@ class TrustScoreUIPlugin extends GenericPlugin {
 
         $user = $request->getUser();
 
-        error_log('TrustScoreUIPlugin::callbackTemplateManagerDisplay called');
-        error_log('TrustScoreUIPlugin::callbackTemplateManagerDisplay requestedOp: ' . $request->getRequestedOp());
+        // error_log('TrustScoreUIPlugin::callbackTemplateManagerDisplay called');
 
+        // error_log(print_r('TrustScoreUIPlugin::callbackTemplateManagerDisplay requestedOp: ' . $request->getRequestedOp()));
 
-        $reviewAssignments = $templateMgr->getTemplateVars('reviewAssignments');
-        error_log(print_r($reviewAssignments));
+        // error_log(print_r($request->getRequestedPage() . ' '));
+
+      
         
+        if ($request->getRequestedPage() !== 'workflow') {
+            return false; // Only inject into the workflow page
+        }
         
 
         $submission = $templateMgr->getTemplateVars('submission');
         if ($submission) {
             $submissionId = $submission->getId();
-            error_log('Submission ID (from template var): ' . $submissionId);
+            // error_log('Submission ID (from template var): ' . $submissionId);
         }
 
-        error_log(print_r($submission, true));
+        // error_log(print_r($submission, true));
         
         // Get Authors
         // $authors = $submission->getAuthors(); // Returns an array of Author objects
@@ -164,6 +170,40 @@ class TrustScoreUIPlugin extends GenericPlugin {
         //     ];
         // }, $reviewAssignments);
 
+
+
+        // Get submission
+        $submission = Repo::submission()->get($submissionId);
+        $publication = $submission->getCurrentPublication();
+
+        // Get authors
+        $authors = $publication->getData('authors'); // returns Author[] array
+        // error_log(print_r($authors));
+        foreach ($authors as $author) {
+            echo 'AUTHOR: ' . $author->getFullName() . ' (' . $author->getEmail() . ')' . "<br>\n";
+        }
+
+        
+       
+        // Get reviewers
+
+        // Get DAO
+        $reviewAssignmentDao = \DAORegistry::getDAO('ReviewAssignmentDAO'); /** @var ReviewAssignmentDAO $reviewAssignmentDao */
+
+        // Retrieve all review assignments for a submission
+        $reviewAssignments = $reviewAssignmentDao->getBySubmissionId($submission->getId());
+
+        foreach ($reviewAssignments as $reviewAssignment) {
+            $reviewerId = $reviewAssignment->getReviewerId();
+            $reviewer = Repo::user()->get($reviewerId);
+
+            echo 'REVIEWER: ' . $reviewer->getFullName() . ' (' . $reviewer->getEmail() . ')' . "<br>\n";
+        }
+       
+
+
+
+
         // Inject data into Vue
         $templateMgr->setState([
             'trustScores' => [
@@ -182,7 +222,7 @@ class TrustScoreUIPlugin extends GenericPlugin {
         ]);
         
         
-        error_log('TrustScoreUIPlugin::callbackTemplateManagerDisplay finished');
+        // error_log('TrustScoreUIPlugin::callbackTemplateManagerDisplay finished');
         // Permit other plugins to continue interacting with this hook
         return false;
     }
