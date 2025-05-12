@@ -189,12 +189,11 @@ class TrustScoreUIPlugin extends GenericPlugin {
                 'id' => $author->getId(),
                 'name' => $author->getFullName(),
                 'email' => $author->getEmail(),
-                'score' => 78, // Placeholder; replace with real logic
+                'score' => 0, // Placeholder; replace with real logic
             ];
         }
 
-        
-       
+    
         // Get reviewers
         $reviewer_list = [];
 
@@ -213,10 +212,34 @@ class TrustScoreUIPlugin extends GenericPlugin {
                 'id' => $reviewer->getId(),
                 'name' => $reviewer->getFullName(),
                 'email' => $reviewer->getEmail(),
-                'score' => 85, // Placeholder; replace with real logic
+                'score' => 0, // Placeholder; replace with real logic
             ];
         }
-       
+
+        // business logic: send authors or reviewers as json to the backend fastapi endpoint and receive same json but with score updated
+        // $backendUrl = 'http://fastapi:8000/bulk-verify'; // Replace with your backend URL
+
+
+        // Send authors
+        // $authorPayload = [
+        //     'role' => 'author',
+        //     'users' => $author_list,
+        // ];
+        // $updatedAuthors = $this->sendToBackend($backendUrl, $authorPayload);
+        // if ($updatedAuthors && isset($updatedAuthors['users'])) {
+        //     $author_list = $updatedAuthors['users'];
+        // }
+
+        // Send reviewers
+        // $reviewerPayload = [
+        //     'role' => 'reviewer',
+        //     'users' => $reviewer_list,
+        // ];
+        // $updatedReviewers = $this->sendToBackend($backendUrl, $reviewerPayload);
+        // if ($updatedReviewers && isset($updatedReviewers['users'])) {
+        //     $reviewer_list = $updatedReviewers['users'];
+        // }
+
 
         // Inject data into Vue
         $templateMgr->setState([
@@ -249,5 +272,26 @@ class TrustScoreUIPlugin extends GenericPlugin {
     public function getDescription() {
         // return __('plugins.generic.backendUiExample.description');
         return 'This is a Bona Fide plugin with trust score GUI';
+    }
+
+    // Helper function to send data to the FastAPI backend
+    private function sendToBackend($url, $data) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+        $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            error_log('cURL error: ' . curl_error($ch));
+            curl_close($ch);
+            return null;
+        }
+
+        curl_close($ch);
+        return json_decode($response, true);
     }
 }

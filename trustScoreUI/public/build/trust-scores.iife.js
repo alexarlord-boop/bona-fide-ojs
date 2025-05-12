@@ -17,9 +17,55 @@
         required: true,
       },
     },
+
+    data() {
+      return {
+        authors: this.initData.authors.map(author => ({
+          ...author,
+          score: '-1', // Initial placeholder for scores
+        })),
+        reviewers: this.initData.reviewers.map(reviewer => ({
+          ...reviewer,
+          score: '-1', // Initial placeholder for scores
+        })),
+      };
+    },
+    mounted() {
+      // Fetch updated scores asynchronously
+      this.fetchScores('author', this.authors);
+      this.fetchScores('reviewer', this.reviewers);
+    },
+    methods: {
+      async fetchScores(role, users) {
+        try {
+          const response = await fetch('http://localhost:8000/bulk-verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role, users }),
+          });
+          const data = await response.json();
+          if (data && data.users) {
+            // console.log('Fetched scores:', data.users);
+            // Update scores dynamically
+            users.forEach((user, index) => {
+              user.score = data.users[index].score;
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching scores:', error);
+          // Handle error by setting scores to "Error"
+          users.forEach(user => {
+            user.score = 'Error';
+          });
+        }
+      },
+    },
+    
     template: `
       <div class="example-tab">
-  
+
         <h3>Authors</h3>
         <table class="table table-striped table-bordered flex" style="width: 60%;">
           <thead>
@@ -30,13 +76,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="author in initData.authors" :key="author.name">
+            <tr v-for="author in authors" :key="author.name">
               <td>{{ author.name }}</td>
               <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
-              <td style="text-align: center;"><strong>{{ author.score }}</strong>
-             
-   
-              
+              <td style="text-align: center;">
+                <PkpBadge label="trust score">
+                  <template v-if="author.score === '-1'">
+                    <PkpSpinner/>
+                  </template>
+                  <template v-else>
+                    <strong>{{ author.score }}</strong>
+                  </template>
+                </PkpBadge>
               </td>
             </tr>
           </tbody>
@@ -57,10 +108,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="reviewer in initData.reviewers" :key="reviewer.name">
+            <tr v-for="reviewer in reviewers" :key="reviewer.name">
               <td>{{ reviewer.name }}</td>
               <td><a :href="'mailto:' + reviewer.email">{{ reviewer.email }}</a></td>
-              <td style="text-align: center;"><strong>{{ reviewer.score }}</strong></td>
+              <td style="text-align: center;">
+                <PkpBadge label="trust score">
+                  <template v-if="reviewer.score === '-1'">
+                    <PkpSpinner/>
+                  </template>
+                  <template v-else>
+                    <strong>{{ reviewer.score }}</strong>
+                  </template>
+                </PkpBadge>
+              </td>
             </tr>
           </tbody>
         </table>
