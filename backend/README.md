@@ -11,7 +11,7 @@ The service is containerized using Docker and integrated into the overall system
 ```yaml
 services:
   db: ...
-  
+
   ojs: ...
 
   fastapi:
@@ -23,3 +23,5 @@ services:
     networks:
       - inside
 ```
+
+If you want to spin up OJS with this bakcend as a sidecar, make sure that /backend directory lies on the same level as the ```docker-compose.yml``` file.
