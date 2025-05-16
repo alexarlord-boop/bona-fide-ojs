@@ -17,6 +17,7 @@ Both components are containerized using Docker and integrated into the OJS syste
 
 ### Directory Structure
 
+```plaintext
 .
 └── OJS/
     └── journalName/
@@ -30,3 +31,4 @@ Both components are containerized using Docker and integrated into the OJS syste
         │   │       └── trustScoreUI    # OJS dir extension for Bona Fide trust scoring
         │   └── ...
         └── docker-compose.yaml
+```
