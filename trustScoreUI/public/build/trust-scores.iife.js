@@ -61,9 +61,43 @@
           });
         }
       },
+      async exportToPDF() {
+        try {
+          const response = await fetch('http://localhost:8000/export-pdf', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              authors: this.authors,
+              reviewers: this.reviewers
+            }),
+          });
+      
+          if (!response.ok) throw new Error('PDF generation failed');
+      
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+      
+          // Create download link
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'trust-report.pdf';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+      
+          // Clean up
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Failed to export PDF:', error);
+          alert('Failed to export PDF');
+        }
+      },
     },
     
     template: `
+    
       <div class="example-tab">
 
         <h3>Authors</h3>
@@ -127,6 +161,13 @@
         <div v-else>
           <p>No trust score data provided.</p>
         </div>
+
+        <PkpHeader>
+        
+          <template slot="actions">
+             <PkpButton @click="exportToPDF">Export PDF</PkpButton>
+          </template>
+        </PkpHeader>
       </div>
     `
   });

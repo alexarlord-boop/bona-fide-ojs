@@ -61,6 +61,40 @@ export default {
         console.error('Error fetching scores:', error);
       }
     },
+
+    async exportToPDF() {
+      try {
+        const response = await fetch('http://fastapi/export-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            authors: this.authors,
+            reviewers: this.reviewers
+          }),
+        });
+
+        if (!response.ok) throw new Error('PDF generation failed');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        // Create download link
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'trust-report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        // Clean up
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export PDF:', error);
+        alert('Failed to export PDF');
+      }
+    },
   },
 };
 </script>
