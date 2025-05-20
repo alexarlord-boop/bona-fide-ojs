@@ -6,6 +6,8 @@ from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fpdf import FPDF
 import io
+from datetime import datetime
+
 
 import asyncio  # Import asyncio for adding delay
 import json
@@ -14,7 +16,7 @@ import random
 
 app = FastAPI()
 
-# frontend port (8081 in your case)
+# frontend port
 origins = [
     "http://localhost:8081",
     "http://127.0.0.1:8081"
@@ -34,7 +36,7 @@ class User(BaseModel):
     id: int
     name: str
     email: str
-    score: int = 0  # Default score is 0
+    score: int = 0  # Default score
 
 # bulk request model
 class BulkRequest(BaseModel):
@@ -56,7 +58,7 @@ async def bulk_verify(request: BulkRequest):
         elif request.role == "reviewer":
             user.score = random.randint(0, 100)
         else:
-            user.score = -1  # Default score
+            user.score = 0  # Default score
 
         updated_users.append(user)
 
@@ -70,24 +72,62 @@ class TrustReportRequest(BaseModel):
     authors: List[User]
     reviewers: List[User]
 
+
+class PDF(FPDF):
+    def header(self):
+        self.set_font("Arial", "B", 16)
+        self.cell(0, 10, "Trust Score Report", border=False, ln=True, align="C")
+
+         # Current date in top-right corner
+        self.set_font("Arial", "", 11)
+        date_str = datetime.now().strftime("%B %d, %Y")
+        self.set_xy(150, 10)
+        self.cell(0, 10, date_str, ln=True, align="R")
+
+        self.ln(10)
+
+    def divider(self):
+        self.set_draw_color(169, 169, 169)  # grey
+        self.set_line_width(0.5)
+        self.line(10, self.get_y(), 200, self.get_y())
+        self.ln(5)
+
+    def add_table(self, title, users):
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, f"{title}:", ln=True)
+
+        # Table header
+        self.set_font("Arial", "B", 11)
+        self.cell(60, 8, "Name", border=1)
+        self.cell(80, 8, "Email", border=1)
+        self.cell(30, 8, "Score", border=1, ln=True)
+
+        # Table rows
+        self.set_font("Arial", "", 11)
+        for user in users:
+            self.cell(60, 8, user.name, border=1)
+            # Add mailto link
+            email_link = f"mailto:{user.email}"
+            email_width = 80
+            self.cell(email_width, 8, user.email, border=1, ln=0)
+            x, y = self.get_x() - email_width, self.get_y()
+            self.link(x, y, email_width, 8, email_link)
+
+            self.cell(30, 8, str(user.score), border=1, ln=True)
+        self.ln(5)
+
+
 @app.post("/export-pdf")
 async def export_pdf(data: TrustReportRequest):
-    pdf = FPDF()
+    pdf = PDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    
 
-    pdf.cell(200, 10, txt="Trust Score Report", ln=True, align='C')
-    pdf.ln(10)
+    # Add Authors table
+    pdf.add_table("Authors", data.authors)
+    # pdf.divider()
 
-    pdf.cell(200, 10, txt="Authors:", ln=True)
-    for author in data.authors:
-        pdf.cell(200, 10, txt=f"{author.name} ({author.email}) - Score: {author.score}", ln=True)
-
-    pdf.ln(5)
-    pdf.cell(200, 10, txt="Reviewers:", ln=True)
-    for reviewer in data.reviewers:
-        pdf.cell(200, 10, txt=f"{reviewer.name} ({reviewer.email}) - Score: {reviewer.score}", ln=True)
+    # Add Reviewers table
+    pdf.add_table("Reviewers", data.reviewers)
 
     # Return PDF as bytes
     buffer = io.BytesIO()
@@ -97,9 +137,7 @@ async def export_pdf(data: TrustReportRequest):
     return Response(
         content=buffer.read(),
         media_type="application/pdf",
-        headers={
-            "Content-Disposition": "attachment; filename=trust-report.pdf"
-        }
+        headers={"Content-Disposition": "attachment; filename=trust-report.pdf"}
     )
 
 
@@ -109,5 +147,3 @@ async def verify_payload(request: Request):
     json_data = json.dumps(data)
     print("Received verification:", json_data)
     return {"status": "ok", "received": json_data}
-
-
