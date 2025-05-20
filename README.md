@@ -10,7 +10,8 @@ The **backend** is a FastAPI-based service that supports the plugin by handling 
 Both components are containerized using Docker and integrated into the OJS system through Docker Compose for seamless deployment and scalability.
 
 ### Installation Instructions
-1. OJS must be installed and running. [OJS Docker guide](https://github.com/pkp/docker-ojs)
+1. OJS must be installed and running. [OJS Docker guide](https://github.com/pkp/docker-ojs). 
+    - OJS version during development: OJS_VERSION=3_4_0-8
 2. Clone the repository containing the Bona Fide Plugin and backend service into volumes/plugins/generic/ directory of your OJS installation.
 3. Move backend service to the same directory as the `docker-compose.yml` file.
 4. Update docker-compose.yaml to include the backend service:
