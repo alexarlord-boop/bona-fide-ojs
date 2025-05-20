@@ -44,3 +44,6 @@ services:
         │   └── ...
         └── docker-compose.yaml
 ```
+
+### Preview
+![Preview](screenshot-1.png)
