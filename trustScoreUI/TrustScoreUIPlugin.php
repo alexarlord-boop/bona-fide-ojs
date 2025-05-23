@@ -271,7 +271,7 @@ class TrustScoreUIPlugin extends GenericPlugin {
      */
     public function getDescription() {
         // return __('plugins.generic.backendUiExample.description');
-        return 'This is a Bona Fide plugin with trust score GUI';
+        return 'Enhances the editorial workflow by displaying trust scores for authors and reviewers directly in the OJS interface.';
     }
 
     // Helper function to send data to the FastAPI backend
