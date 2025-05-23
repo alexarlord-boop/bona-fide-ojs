@@ -36,7 +36,7 @@ class TutorialExamplePlugin extends GenericPlugin
      */
     public function getDisplayName()
     {
-        return 'Bona Fide Plugin';
+        return 'Tutorial Example Plugin';
     }
 
     /**
@@ -44,7 +44,7 @@ class TutorialExamplePlugin extends GenericPlugin
      */
     public function getDescription()
     {
-        return 'This plugin verifies authors and reviewers.';
+        return 'This plugin demonstrates how to create a custom plugin in OJS. With focus to Bona Fide project.';
     }
 
     /**
