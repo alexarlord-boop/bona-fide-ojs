@@ -125,7 +125,12 @@
             <tr>
               <th style="width: 40%; text-align: left;" >Name</th>
               <th style="width: 40%; text-align: left;" >Email</th>
-              <th style="width: 20%;" >Trust Score</th>
+              <th style="width: 20%;" >Trust Score
+              <PkpTooltip
+                tooltip="Trust score based on author's reputation, past performance and relations."
+                label="Tooltip for the author trust score."
+              />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -157,7 +162,12 @@
             <tr>
               <th style="width: 40%; text-align: left;" >Name</th>
               <th style="width: 40%; text-align: left;" >Email</th>
-              <th style="width: 20%;" >Trust Score</th>
+              <th style="width: 20%;" >Trust Score
+              <PkpTooltip
+                tooltip="Trust score based on reviewer's reputation, past performance and relations."
+                label="Tooltip for the reviewer trust score."
+              />
+              </th>
             </tr>
           </thead>
           <tbody>
