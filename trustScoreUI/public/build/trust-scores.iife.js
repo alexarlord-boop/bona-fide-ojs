@@ -41,6 +41,14 @@
       console.log('Mounted example-tab component with initial data:', this.initData);
     },
     methods: {
+      getScoreClass(score) {
+        if (score === 'Error') return 'score-error';
+        const numeric = parseFloat(score);
+        if (isNaN(numeric)) return 'score-unknown';
+        if (numeric >= 80) return 'score-high';
+        if (numeric >= 50) return 'score-medium';
+        return 'score-low';
+      },
       async fetchScores(role, users) {
         // console.log(`Fetching scores for ${role}s:`, users);
         try {
@@ -81,7 +89,7 @@
               journal_title: this.journal_title,
               submission_id: this.submission_id,
               submission_title: this.submission_title,
-              
+
             }),
           });
       
@@ -125,7 +133,7 @@
               <td>{{ author.name }}</td>
               <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
               <td style="text-align: center;">
-                <PkpBadge label="trust score">
+                <PkpBadge label="trust score" :class="getScoreClass(author.score)">
                   <template v-if="author.score === '-1'">
                     <PkpSpinner/>
                   </template>
@@ -157,7 +165,7 @@
               <td>{{ reviewer.name }}</td>
               <td><a :href="'mailto:' + reviewer.email">{{ reviewer.email }}</a></td>
               <td style="text-align: center;">
-                <PkpBadge label="trust score">
+                <PkpBadge label="trust score" :class="getScoreClass(reviewer.score)">
                   <template v-if="reviewer.score === '-1'">
                     <PkpSpinner/>
                   </template>
