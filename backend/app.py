@@ -147,8 +147,19 @@ class PDF(FPDF):
             x, y = self.get_x() - email_width, self.get_y()
             self.link(x, y, email_width, 8, email_link)
 
-            self.cell(30, 8, str(user.score), border=1, ln=True)
+
+            # Set fill color based on score
+            if user.score < 50:
+                self.set_fill_color(245, 198, 203)  # Light red
+            elif user.score < 80:
+                self.set_fill_color(255, 238, 186)  # Light yellow
+            else:
+                self.set_fill_color(195, 230, 203)  # Light green
+
+            self.cell(30, 8, str(user.score), border=1, ln=True, fill=True)
         self.ln(5)
+
+        self.set_fill_color(255, 255, 255)  # reset to white
     
     def footer(self):
         # Set the position at the bottom of the page
