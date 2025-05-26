@@ -252,8 +252,16 @@ class TrustScoreUIPlugin extends GenericPlugin {
         // Inject data into Vue
         $templateMgr->setState([
             'trustScores' => [
+                'journal_title' => $context->getLocalizedName(),
+                'submission_id' => $submissionId,
+                'submission_title' => $publication->getLocalizedData('title'),
                 'authors' => $author_list,
                 'reviewers' => $reviewer_list,
+                'editor' => [
+                    'id' => $user->getId(),
+                    'name' => $user->getFullName(),
+                    'email' => $user->getEmail(),
+                ],
             ],
         ]);
         

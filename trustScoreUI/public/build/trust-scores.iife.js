@@ -28,12 +28,17 @@
           ...reviewer,
           score: '-1', // Initial placeholder for scores
         })),
+        editor: this.initData.editor,
+        journal_title : this.initData.journal_title,
+        submission_id : this.initData.submission_id,
+        submission_title : this.initData.submission_title,
       };
     },
     mounted() {
       // Fetch updated scores asynchronously
       this.fetchScores('author', this.authors);
       this.fetchScores('reviewer', this.reviewers);
+      console.log('Mounted example-tab component with initial data:', this.initData);
     },
     methods: {
       async fetchScores(role, users) {
@@ -71,7 +76,12 @@
             },
             body: JSON.stringify({
               authors: this.authors,
-              reviewers: this.reviewers
+              reviewers: this.reviewers,
+              editor: this.editor,
+              journal_title: this.journal_title,
+              submission_id: this.submission_id,
+              submission_title: this.submission_title,
+              
             }),
           });
       
