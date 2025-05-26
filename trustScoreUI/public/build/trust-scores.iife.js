@@ -37,6 +37,7 @@
     },
     methods: {
       async fetchScores(role, users) {
+        // console.log(`Fetching scores for ${role}s:`, users);
         try {
           const response = await fetch('http://localhost:8000/bulk-verify', {
             method: 'POST',

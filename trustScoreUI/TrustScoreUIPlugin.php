@@ -202,9 +202,17 @@ class TrustScoreUIPlugin extends GenericPlugin {
 
         // Retrieve all review assignments for a submission
         $reviewAssignments = $reviewAssignmentDao->getBySubmissionId($submission->getId());
-
+        
+        $reviewer_dict = [];
         foreach ($reviewAssignments as $reviewAssignment) {
             $reviewerId = $reviewAssignment->getReviewerId();
+            // Skip if reviewerId already processed
+            if (isset($reviewer_dict[$reviewerId])) {
+                continue; // Skip this reviewer if already processed
+            }
+            // Mark this reviewerId as processed
+            $reviewer_dict[$reviewerId] = true;
+            // Get reviewer user object
             $reviewer = Repo::user()->get($reviewerId);
 
             // echo 'REVIEWER: ' . $reviewer->getFullName() . ' (' . $reviewer->getEmail() . ')' . "<br>\n";
