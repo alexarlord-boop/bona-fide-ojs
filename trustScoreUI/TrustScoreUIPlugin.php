@@ -225,7 +225,6 @@ class TrustScoreUIPlugin extends GenericPlugin {
                 'id' => $reviewer->getId(),
                 'name' => $reviewer->getFullName(),
                 'email' => $reviewer->getEmail(),
-                'orcid' => $reviewer->getData('orcid'),
                 'affiliation' => $reviewer->getData('affiliation') ?? '', // Handle null affiliation
                 'score' => 0, // Placeholder; replace with real logic
             ];

@@ -120,12 +120,13 @@
       <div class="example-tab">
 
         <h3>Authors</h3>
-        <table class="table table-striped table-bordered flex" style="width: 80%;">
+        <table class="table table-striped table-bordered flex" style="width: 100%;">
           <thead>
             <tr>
-              <th style="width: 30%; text-align: left;" >Name</th>
-              <th style="width: 30%; text-align: left;" >Email</th>
-              <th style="width: 30%; text-align: left;" >Affiliation</th>
+              <th style="width: 25%; text-align: left;" >Name</th>
+              <th style="width: 25%; text-align: left;" >Email</th>
+              <th style="width: 20%; text-align: left;" >Affiliation</th>
+              <th style="width: 20%; text-align: left;" > <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID" style="vertical-align: middle;"> ORCID</th>
               <th style="width: 10%;" >Trust Score
               <PkpTooltip
                 tooltip="Trust score based on author's reputation, past performance and relations."
@@ -139,6 +140,12 @@
               <td>{{ author.name }}</td>
               <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
               <td>{{ author.affiliation.en }}</td>
+              <td>
+                <a v-if="author.orcid" :href="author.orcid" target="_blank">
+                  
+                  {{ author.orcid.split('/').pop() }}
+                </a>
+              </td>
               <td style="text-align: center;">
                 <PkpBadge label="trust score" :class="getScoreClass(author.score)">
                   <template v-if="author.score === '-1'">
@@ -159,12 +166,13 @@
 
 
         <h3 class="mt-1">Reviewers</h3>
-        <table class="table table-striped table-bordered" style="width: 80%;">
+        <table class="table table-striped table-bordered" style="width: 100%;">
           <thead>
             <tr>
-              <th style="width: 30%; text-align: left;" >Name</th>
-              <th style="width: 30%; text-align: left;" >Email</th>
-              <th style="width: 30%; text-align: left;" >Affiliation</th>
+              <th style="width: 25%; text-align: left;" >Name</th>
+              <th style="width: 25%; text-align: left;" >Email</th>
+              <th style="width: 20%; text-align: left;" >Affiliation</th>
+              <th style="width: 20%; text-align: center;" ></th>
               <th style="width: 10%;" >Trust Score
               <PkpTooltip
                 tooltip="Trust score based on reviewer's reputation, past performance and relations."
@@ -178,6 +186,7 @@
               <td>{{ reviewer.name }}</td>
               <td><a :href="'mailto:' + reviewer.email">{{ reviewer.email }}</a></td>
               <td>{{ reviewer.affiliation.en }}</td>
+              <td></td>
               <td style="text-align: center;">
                 <PkpBadge label="trust score" :class="getScoreClass(reviewer.score)">
                   <template v-if="reviewer.score === '-1'">
