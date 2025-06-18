@@ -24,6 +24,7 @@
           ...author,
           score: '-1', // Initial placeholder for scores
         })),
+        accordionState: {}, // Track accordion state for each author
         reviewers: this.initData.reviewers.map(reviewer => ({
           ...reviewer,
           score: '-1', // Initial placeholder for scores
@@ -41,6 +42,9 @@
       console.log('Mounted example-tab component with initial data:', this.initData);
     },
     methods: {
+      toggleAccordion(index) {
+        this.$set(this.accordionState, index, !this.accordionState[index]);
+      },
       getScoreClass(score) {
         if (score === 'Error') return 'score-error';
         const numeric = parseFloat(score);
@@ -136,27 +140,43 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="author in authors" :key="author.name">
-              <td>{{ author.name }}</td>
-              <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
-              <td style="line-height: 17px; line-break: loose; padding-right: 5px;">{{ author.affiliation.en }}</td>
-              <td>
-                <a v-if="author.orcid" :href="author.orcid" target="_blank">
-                  
-                  {{ author.orcid.split('/').pop() }}
-                </a>
-              </td>
-              <td style="text-align: center;">
-                <PkpBadge label="trust score" :class="getScoreClass(author.score)">
-                  <template v-if="author.score === '-1'">
-                    <PkpSpinner/>
-                  </template>
-                  <template v-else>
-                    <strong>{{ author.score }}</strong>
-                  </template>
-                </PkpBadge>
-              </td>
-            </tr>
+            <template v-for="(author, index) in authors" :key="author.name">
+              <!-- Original row -->
+              <tr>
+                <td @click="toggleAccordion(index)" style="cursor: pointer;">
+                  {{ author.name }}
+                  <span v-if="accordionState[index]">▼</span>
+                  <span v-else>▶</span>
+                </td>
+                <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
+                <td style="line-height: 17px; line-break: loose; padding-right: 5px;">{{ author.affiliation.en }}</td>
+                <td>
+                  <a v-if="author.orcid" :href="author.orcid" target="_blank">
+                    {{ author.orcid.split('/').pop() }}
+                  </a>
+                </td>
+                <td style="text-align: center;">
+                  <PkpBadge label="trust score" :class="getScoreClass(author.score)">
+                    <template v-if="author.score === '-1'">
+                      <PkpSpinner/>
+                    </template>
+                    <template v-else>
+                      <strong>{{ author.score }}</strong>
+                    </template>
+                  </PkpBadge>
+                </td>
+              </tr>
+
+              <!-- Collapsible row -->
+              <tr v-if="accordionState[index]">
+                <td colspan="5">
+                  <div class="accordion-content">
+                    <p><strong>Mock Data:</strong> Additional details about {{ author.name }}.</p>
+                    <p>Example: Publications, collaborations, etc.</p>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
 
