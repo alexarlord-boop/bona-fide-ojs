@@ -120,12 +120,13 @@
       <div class="example-tab">
 
         <h3>Authors</h3>
-        <table class="table table-striped table-bordered flex" style="width: 60%;">
+        <table class="table table-striped table-bordered flex" style="width: 80%;">
           <thead>
             <tr>
-              <th style="width: 40%; text-align: left;" >Name</th>
-              <th style="width: 40%; text-align: left;" >Email</th>
-              <th style="width: 20%;" >Trust Score
+              <th style="width: 30%; text-align: left;" >Name</th>
+              <th style="width: 30%; text-align: left;" >Email</th>
+              <th style="width: 30%; text-align: left;" >Affiliation</th>
+              <th style="width: 10%;" >Trust Score
               <PkpTooltip
                 tooltip="Trust score based on author's reputation, past performance and relations."
                 label="Tooltip for the author trust score."
@@ -137,6 +138,7 @@
             <tr v-for="author in authors" :key="author.name">
               <td>{{ author.name }}</td>
               <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
+              <td>{{ author.affiliation.en }}</td>
               <td style="text-align: center;">
                 <PkpBadge label="trust score" :class="getScoreClass(author.score)">
                   <template v-if="author.score === '-1'">
@@ -157,12 +159,13 @@
 
 
         <h3 class="mt-1">Reviewers</h3>
-        <table class="table table-striped table-bordered" style="width: 60%;">
+        <table class="table table-striped table-bordered" style="width: 80%;">
           <thead>
             <tr>
-              <th style="width: 40%; text-align: left;" >Name</th>
-              <th style="width: 40%; text-align: left;" >Email</th>
-              <th style="width: 20%;" >Trust Score
+              <th style="width: 30%; text-align: left;" >Name</th>
+              <th style="width: 30%; text-align: left;" >Email</th>
+              <th style="width: 30%; text-align: left;" >Affiliation</th>
+              <th style="width: 10%;" >Trust Score
               <PkpTooltip
                 tooltip="Trust score based on reviewer's reputation, past performance and relations."
                 label="Tooltip for the reviewer trust score."
@@ -174,6 +177,7 @@
             <tr v-for="reviewer in reviewers" :key="reviewer.name">
               <td>{{ reviewer.name }}</td>
               <td><a :href="'mailto:' + reviewer.email">{{ reviewer.email }}</a></td>
+              <td>{{ reviewer.affiliation.en }}</td>
               <td style="text-align: center;">
                 <PkpBadge label="trust score" :class="getScoreClass(reviewer.score)">
                   <template v-if="reviewer.score === '-1'">

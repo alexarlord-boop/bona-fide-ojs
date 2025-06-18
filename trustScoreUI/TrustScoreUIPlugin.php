@@ -192,6 +192,8 @@ class TrustScoreUIPlugin extends GenericPlugin {
                 'id' => $author->getId(),
                 'name' => $author->getFullName(),
                 'email' => $author->getEmail(),
+                'orcid' => $author->getData('orcid'),
+                'affiliation' => $author->getData('affiliation') ?? '', // Handle null affiliation
                 'score' => 0, // Placeholder; replace with real logic
             ];
         }
@@ -223,6 +225,8 @@ class TrustScoreUIPlugin extends GenericPlugin {
                 'id' => $reviewer->getId(),
                 'name' => $reviewer->getFullName(),
                 'email' => $reviewer->getEmail(),
+                'orcid' => $reviewer->getData('orcid'),
+                'affiliation' => $reviewer->getData('affiliation') ?? '', // Handle null affiliation
                 'score' => 0, // Placeholder; replace with real logic
             ];
         }
