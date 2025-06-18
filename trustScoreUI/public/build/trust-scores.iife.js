@@ -123,9 +123,9 @@
         <table class="table table-striped table-bordered flex" style="width: 100%;">
           <thead>
             <tr>
-              <th style="width: 25%; text-align: left;" >Name</th>
-              <th style="width: 25%; text-align: left;" >Email</th>
-              <th style="width: 20%; text-align: left;" >Affiliation</th>
+              <th style="width: 20%; text-align: left;" >Name</th>
+              <th style="width: 20%; text-align: left;" >Email</th>
+              <th style="width: 30%; text-align: left;" >Affiliation</th>
               <th style="width: 20%; text-align: left;" > <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID" style="vertical-align: middle;"> ORCID</th>
               <th style="width: 10%;" >Trust Score
               <PkpTooltip
@@ -139,7 +139,7 @@
             <tr v-for="author in authors" :key="author.name">
               <td>{{ author.name }}</td>
               <td><a :href="'mailto:' + author.email">{{ author.email }}</a></td>
-              <td>{{ author.affiliation.en }}</td>
+              <td style="line-height: 17px; line-break: loose; padding-right: 5px;">{{ author.affiliation.en }}</td>
               <td>
                 <a v-if="author.orcid" :href="author.orcid" target="_blank">
                   
