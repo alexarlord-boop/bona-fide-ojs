@@ -171,8 +171,21 @@
               <tr v-if="accordionState[index]">
                 <td colspan="5">
                   <div class="accordion-content">
-                    <p><strong>Mock Data:</strong> Additional details about {{ author.name }}.</p>
-                    <p>Example: Publications, collaborations, etc.</p>
+                    <div class="progress-bar-container">
+                      <strong>Affiliation Score:</strong> <span v-if="author.score !== '-1'">{{ parseFloat(author.score) }} / 100</span>
+                      <PkpProgressBar :value="author.score === '-1' ? 0 : parseFloat(author.score)" :max="100" />
+                      
+                    </div>
+                    <div class="progress-bar-container">
+                      <strong>Reputation Score:</strong> <span v-if="author.score !== '-1'">{{ (parseFloat(author.score) * 0.8).toFixed(2) }} / 100</span>
+                      <PkpProgressBar :value="author.score === '-1' ? 0 : parseFloat(author.score) * 0.8" :max="100" />
+                      
+                    </div>
+                    <div class="progress-bar-container">
+                      <strong>Performance Score:</strong> <span v-if="author.score !== '-1'">{{ (parseFloat(author.score) * 0.6).toFixed(2) }} / 100</span>
+                      <PkpProgressBar :value="author.score === '-1' ? 0 : parseFloat(author.score) * 0.6" :max="100" />
+                      
+                    </div>
                   </div>
                 </td>
               </tr>
