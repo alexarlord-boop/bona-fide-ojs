@@ -75,7 +75,7 @@ class TrustScoreUIPlugin extends GenericPlugin {
             $request = Application::get()->getRequest();
             $templateMgr = TemplateManager::getManager($request);
             $this->addJavaScript($request, $templateMgr);
-            $templateMgr->addStyleSheet('backendUiExampleStyle',"{$request->getBaseUrl()}/{$this->getPluginPath()}/public/build/style.css", [
+            $templateMgr->addStyleSheet('backendUiExampleStyle',"{$request->getBaseUrl()}/{$this->getPluginPath()}/public/build/trustscoreui.css", [
                 'contexts' => ['backend']
             ] );
         

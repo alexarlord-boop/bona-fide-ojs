@@ -1,4 +1,4 @@
-import ExampleTab from "./js/Components/ExampleTab.vue";
+import ExampleTab from "./components/ExampleTab.vue";
 
 
 pkp.Vue.component("ExampleTab", ExampleTab);
