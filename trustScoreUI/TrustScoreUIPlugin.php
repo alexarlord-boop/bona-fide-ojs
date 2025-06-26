@@ -25,49 +25,49 @@ class TrustScoreUIPlugin extends GenericPlugin {
 
         if ($this->getEnabled($mainContextId)) {
 
-            // Injecting tab component placeholder
-            Hook::add('Template::Workflow', function($hookName, $args) {
+            // This hook is removed in OJS 3.5
+            // Hook::add('Template::Workflow', function($hookName, $args) {
 
             
                
-                // $userIds = Repo::user()
-                // ->getCollector()
-                // // ->filterByStatus([Collector::STATUS_DISABLED])
-                // ->filterByRoleIds([Role::ROLE_ID_REVIEWER])
-                // ->getMany();
+            //     // $userIds = Repo::user()
+            //     // ->getCollector()
+            //     // // ->filterByStatus([Collector::STATUS_DISABLED])
+            //     // ->filterByRoleIds([Role::ROLE_ID_REVIEWER])
+            //     // ->getMany();
 
-                // error_log(print_r($userIds));
+            //     // error_log(print_r($userIds));
 
 
 
-                $user = Application::get()->getRequest()->getUser();
-                $context = Application::get()->getRequest()->getContext();
+            //     $user = Application::get()->getRequest()->getUser();
+            //     $context = Application::get()->getRequest()->getContext();
 
-                $userGroups = Repo::userGroup()
-                ->getCollector()
-                ->filterByUserIds([$user->getId()])
-                ->filterByContextIds([$context->getId()])
-                ->filterByRoleIds([Role::ROLE_ID_MANAGER]) // 16 = Journal Editor
-                ->getMany();
+            //     $userGroups = Repo::userGroup()
+            //     ->getCollector()
+            //     ->filterByUserIds([$user->getId()])
+            //     ->filterByContextIds([$context->getId()])
+            //     ->filterByRoleIds([Role::ROLE_ID_MANAGER]) // 16 = Journal Editor
+            //     ->getMany();
                 
 
-                $isEditor = !$userGroups->isEmpty();
-                // error_log(print_r($isEditor));
+            //     $isEditor = !$userGroups->isEmpty();
+            //     // error_log(print_r($isEditor));
                
 
               
-                if (!$isEditor) {
-                    return false; // Don't add the tab if the user is not an editor
-                }
+            //     if (!$isEditor) {
+            //         return false; // Don't add the tab if the user is not an editor
+            //     }
 
-                $templateMgr = $args[1];
-                $output = & $args[2];
+            //     $templateMgr = $args[1];
+            //     $output = & $args[2];
         
-                $output .= $templateMgr->fetch($this->getTemplateResource('tab.tpl'));
-                // Permit other plugins to continue interacting with this hook
-                return false;
+            //     $output .= $templateMgr->fetch($this->getTemplateResource('tab.tpl'));
+            //     // Permit other plugins to continue interacting with this hook
+            //     return false;
 
-            });
+            // });
 
             Hook::add('TemplateManager::display', [$this, 'callbackTemplateManagerDisplay']);
 
