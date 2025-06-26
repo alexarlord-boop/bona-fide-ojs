@@ -189,7 +189,6 @@
                   </div>
                 </td>
               </tr>
-              <br>
             </template>
           </tbody>
         </table>
