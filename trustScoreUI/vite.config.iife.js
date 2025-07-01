@@ -12,12 +12,10 @@ export default defineConfig({
     },
     outDir: 'public/build',
     rollupOptions: {
-      external: ['vue'],
-      output: {
-        globals: {
-          vue: 'pkp.Vue', // OJS exposes it as pkp.Vue
-        },
-      },
+      external: [], // ❌ НЕ исключаем vue
     },
+  },
+  define: {
+    'process.env': {}, // 🔧 устраняет ошибку "process is not defined"
   },
 });
