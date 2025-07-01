@@ -35,59 +35,18 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
         return items;
     });
 
-    // Adds content to each main tab in the workflow after content
-    // store.extender.extendFn('getPrimaryItems', (items) => {
-    //     items.push({
-    //         key: 'trustScoreTab',
-    //         component: 'TrustScoreUI',
-    //         props: () => ({
-    //             submissionId: store.submission.id,
-    //         }),
-    //     });
-    //     return items;
-    // });
-
-    // Adds content to each main tab in the workflow before content
-    // store.extender.extendFn('getPrimaryControlsLeft', (items) => {
-    //     items.push({
-    //         key: 'trustScoreTab',
-    //         label: 'Trust Score',
-    //         component: 'TrustScoreUI',
-    //         props: () => ({
-    //             submissionId: store.submission.id,
-    //         }),
-    //     });
-    //     return items;
-    // }
-    // );
-
-
-	// // Отрисовываем контент при выборе этой вкладки
-	// store.extender.extendFn('getPrimaryItems', (items) => {
-    //     console.log('getPrimaryItems called');
-    //     console.log(items);
-	// 	// items.push({
-	// 	// 	key: 'trustScoreTab',
-	// 	// 	component: 'TrustScoreUI',
-	// 	// 	props: () => {
-    //     //         console.log('submissionId:', store.submission?.id);
-    //     //         return { submissionId: store.submission?.id };
-    //     //       }
-	// 	// });
-	// 	// return items;
-	// });
-
-    // store.extender.extendFn('getPrimaryItems', (items) => {
-    //     items.push({
-    //         key: 'trustScoreTab',
-    //         component: 'TrustScoreUI',
-    //         renderOnlyIfSelected: true, // 👈 иногда нужно, если не работает по key
-    //         props: () => ({
-    //             submissionId: store.submission.id,
-    //         }),
-    //     });
-    //     return items;
-    // });
+    // Adds content to display after tab click
+    store.extender.extendFn('getPrimaryItems', (items) => {
+        items.push({
+            key: 'trustScoreTab', // 👈 этот key должен совпадать с key из menuItems!
+            component: 'TrustScoreUI',
+            renderOnlyIfSelected: true,
+            props: () => ({
+                submissionId: store.submission.id,
+            }),
+        });
+        return items;
+    });
 
 
 });
