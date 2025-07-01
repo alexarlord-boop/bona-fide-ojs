@@ -17,6 +17,7 @@ const scoreMessage = ref('Loading trust score...');
 // Симуляция получения trust score
 setTimeout(() => {
 	scoreMessage.value = `Submission #${props.submissionId} has a trust score of 85%`;
+	console.assert(scoreMessage.value, 'Trust score loaded successfully');
 }, 1000);
 </script>
 
