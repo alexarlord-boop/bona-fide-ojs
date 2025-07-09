@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, watchEffect } from 'vue';
+import { ref, nextTick, computed, onMounted, watch } from 'vue';
 
 const { useFetch } = pkp.modules.useFetch;
 
@@ -7,124 +7,103 @@ const props = defineProps({
   submissionId: Number,
 });
 
-console.log('props.submissionId:', props.submissionId);
-
 function getApiUrl(path) {
   const { protocol, host, pathname } = window.location;
   const pathParts = pathname.split('/').filter(Boolean);
   const indexPhpIndex = pathParts.indexOf('index.php');
   const contextPath = pathParts[indexPhpIndex + 1];
   return `${protocol}//${host}/index.php/${contextPath}/api/v1/${path}`;
-};
+}
 
-// authors fetch
-const submissionUrl = computed(() => getApiUrl(`submissions/${props.submissionId}/publications/${props.submissionId}`));
-// console.log('submissionUrl:', submissionUrl.value);
+// Submission data
+const submissionUrl = computed(() =>
+  getApiUrl(`submissions/${props.submissionId}/publications/${props.submissionId}`)
+);
 const { data: submissionData, fetch: fetchSubmission } = useFetch(submissionUrl, {});
-// console.log('submissionData:', submissionData);
 
-const authors = ref([]);
-const hasAuthors = computed(() => authors.value.length > 0);
-
-
-// reviewers fetch 
-console.log(window.pkp.currentUser);
-const assignmentUrl = computed(() => getApiUrl(`submissions/${props.submissionId}/`));
-// console.log('assignmentUrl:', assignmentUrl.value);
+// Assignment data (contains reviewers)
+const assignmentUrl = computed(() =>
+  getApiUrl(`submissions/${props.submissionId}`)
+);
 const { data: assignmentData, fetch: fetchAssignment } = useFetch(assignmentUrl, {});
-console.log('assignmentData:', assignmentData);
 
-
-// console.log('reviewers:', assignmentData?.value.reviewAssignments?.value);
-onMounted(async () => {
-  if (props.submissionId) {
-    await fetchSubmission();
-    const res = await fetchAssignment();
-    console.log('assignmentData after fetch:', assignmentData.value);
-  }
-});
-
-console.log(getApiUrl('users/2'));
-const getUserById = async (userId) => {
-  const userUrl = getApiUrl(`users/${userId}`);
-  const response = await fetch(userUrl);
-  if (!response.ok) throw new Error('Failed to fetch user');
-  return response.json();
-};
-
+// Reviewers
 const reviewers = ref([]);
 
-// Fetch reviewer user data after assignments are loaded
-const fetchReviewers = async () => {
-  if (assignmentData.value && assignmentData.value.reviewAssignments) {
-    const assignments = assignmentData.value.reviewAssignments;
-    const reviewerPromises = assignments.map(async (assignment) => {
-      try {
-        const user = await getUserById(assignment.reviewerId);
-        console.log('Fetched user for reviewerId:', assignment.reviewerId, user);
-        if (!user || !user.id) {
-          console.warn('User not found for reviewerId:', assignment.reviewerId);
-          return { id: assignment.reviewerId, error: true };
-        }
-        return {
-          id: assignment.reviewerId,
-          givenName: user.givenName,
-          familyName: user.familyName,
-          email: user.email,
-          orcid: user.orcid,
-        };
-      } catch (e) {
-        console.error('Failed to fetch user for reviewerId:', assignment.reviewerId, e);
-        return { id: assignment.reviewerId, error: true };
-      }
-    });
-    reviewers.value = await Promise.all(reviewerPromises);
-    console.log('reviewers after fetch:', reviewers.value);
+// Fetch user details by ID
+const getUserById = async (userId) => {
+  try {
+    const userUrl = getApiUrl(`users/${userId}`);
+    const response = await fetch(userUrl);
+    if (!response.ok) throw new Error('Failed to fetch user');
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching user ${userId}:`, error);
+    return null;
   }
 };
 
-
-
-// const reviewersDetails = ref({});
-
-// const fetchReviewerDetails = async (reviewerId) => {
-//   const userUrl = getApiUrl(`users/${reviewerId}`);
-//   const response = await fetch(userUrl);
-//   if (!response.ok) return null;
-//   return response.json();
-// };
-
-// const fetchAllReviewerDetails = async () => {
-//   if (assignmentData.value && assignmentData.value.reviewAssignments) {
-//     const promises = assignmentData.value.reviewAssignments.map(async (assignment) => {
-//       const details = await fetchReviewerDetails(assignment.reviewerId);
-//       if (details) {
-//         reviewersDetails.value[assignment.reviewerId] = details;
-//       }
-//     });
-//     await Promise.all(promises);
-//     console.log('reviewersDetails after fetch:', reviewersDetails.value);
-//   }
-// };
-
-watch(
-  () => assignmentData.value && assignmentData.value.reviewAssignments,
-  (newVal) => {
-    if (newVal) {
-      fetchAllReviewerDetails();
-    }
-  },
-  { immediate: true }
-);
-
-onMounted(async () => {
-  if (props.submissionId) {
-    await fetchSubmission();
-    await fetchAssignment();
-    await fetchReviewers();
+// Fetch all reviewers
+const fetchReviewers = async (assignments) => {
+  if (!assignments?.length) {
+    console.warn('No reviewAssignments found.');
+    return;
   }
+
+  const reviewerPromises = assignments.map(async (assignment) => {
+    try {
+      const user = await getUserById(assignment.reviewerId);
+      return {
+        id: assignment.reviewerId,
+        givenName: user?.givenName,
+        familyName: user?.familyName,
+        email: user?.email,
+        orcid: user?.orcid,
+      };
+    } catch (e) {
+      console.error('Failed to fetch reviewer', assignment.reviewerId, e);
+      return { id: assignment.reviewerId, error: true };
+    }
+  });
+
+  reviewers.value = await Promise.all(reviewerPromises);
+};
+
+watch(reviewers, (val) => {
+  console.log('reviewers updated:', val);
 });
 
+// watch(
+//   () => assignmentData.value?.reviewAssignments,
+//   async (assignments) => {
+//     if (!assignments?.length) return;
+//     console.log('reviewAssignments loaded:', assignments);
+//     await fetchReviewers();
+//   },
+//   { immediate: true, deep: true }
+// );
+// onMounted(async () => {
+//   if (!props.submissionId) return;
+
+//   await fetchSubmission();
+//   await fetchAssignment();
+
+//   console.log('assignmentData:', assignmentData.value);
+
+//   await fetchReviewers();
+
+//   console.log('reviewers:', reviewers.value);
+// });
+onMounted(async () => {
+  if (!props.submissionId) return;
+  await fetchSubmission();
+  await fetchAssignment();
+  await nextTick(); // на всякий случай
+
+  const assignments = assignmentData.value?.reviewAssignments;
+  console.log('Assignments before passing to fetchReviewers:', assignments);
+  await fetchReviewers(assignments);
+});
 </script>
 
 <template>
@@ -154,26 +133,36 @@ onMounted(async () => {
 
     <h3>Reviewers</h3>
     <!-- <pre>{{ assignmentData }}</pre> -->
-    <table v-if="assignmentData && assignmentData.reviewAssignments">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Surname</th>
-          <th>Email</th>
-          <th>ORCID</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="reviewer in reviewers" :key="reviewer.id">
-          <td>{{ reviewer.givenName?.en || reviewer.givenName || '-' }}</td>
-          <td>{{ reviewer.familyName?.en || reviewer.familyName || '-' }}</td>
-          <td><a :href="'mailto:' + reviewer.email">{{ reviewer.email }}</a></td>
-          <td>
-            <a v-if="reviewer.orcid" :href="'https://orcid.org/' + reviewer.orcid" target="_blank">{{ reviewer.orcid }}</a>
-            <span v-else>-</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Surname</th>
+        <th>Email</th>
+        <th>ORCID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="test in [1,2,3]" :key="test">
+  <td colspan="4">test {{ test }}</td>
+</tr>
+      <tr v-for="reviewer in reviewers" :key="reviewer.id">
+        <td>{{ reviewer.givenName?.en || reviewer.givenName || '-' }}</td>
+        <td>{{ reviewer.familyName?.en || reviewer.familyName || '-' }}</td>
+        <td><a :href="'mailto:' + reviewer.email">{{ reviewer.email }}</a></td>
+        <td>
+          <a v-if="reviewer.orcid" :href="'https://orcid.org/' + reviewer.orcid" target="_blank">{{ reviewer.orcid }}</a>
+          <span v-else>-</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <pre>{{ JSON.stringify(reviewers, null, 2) }}</pre>
+  <pre>{{ reviewers.map(r => r.givenName?.en).join(', ') }}</pre>
+  <pre>reviewers.length: {{ reviewers.length }}</pre>
+<pre>reviewers[0]: {{ reviewers[0] }}</pre>
+<pre>{{ assignmentData }}</pre>
+<pre>{{ assignmentData?.reviewAssignments }}</pre>
+
   </div>
 </template>
