@@ -1,4 +1,6 @@
 import TrustScoreUI from "./components/TrustScoreUI.vue";
+const { useUrl } = pkp.modules.useUrl;
+const { useFetch } = pkp.modules.useFetch;
 
 pkp.registry.registerComponent('TrustScoreUI', TrustScoreUI);
 
@@ -28,6 +30,9 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
     });
 
     store.extender.extendFn('getPrimaryItems', (items) => {
+        const {apiUrl: submissionApiUrl} = useUrl(`submissions/${store.submissionId}`);
+        console.log(`API URL for submission ${store.submissionId}:`, submissionApiUrl);
+
         if (store.selectedMenuState.secondaryMenuItem === 'overview') {
             const trustScoresData = window.trustScoresData || window.pkp?.state?.trustScores || store.state?.trustScores || {};
             items.push({
