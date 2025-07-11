@@ -1,29 +1,7 @@
-// import { defineConfig } from 'vite';
-// import vue from '@vitejs/plugin-vue';
-
-// export default defineConfig({
-//   plugins: [vue()],
-//   build: {
-//     lib: {
-//       entry: 'src/main.js',
-//       name: 'TrustScores',
-//       fileName: () => 'trust-scores.iife.js',
-//       formats: ['iife'],
-//     },
-//     outDir: 'public/build',
-//     rollupOptions: {
-//       external: [], // ❌ НЕ исключаем vue
-//     },
-//   },
-//   define: {
-//     'process.env': {}, // 🔧 устраняет ошибку "process is not defined"
-//   },
-// });
-
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import i18nExtractKeys from "./i18nExtractKeys.vite.js";
+import i18nExtractKeys from "./i18nExtractKeys.vite.js"; // Use named import
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -41,7 +19,8 @@ export default defineConfig({
       // otherwise there would be risk that page will be rendered before plugin components gets registered
       formats: ["iife"],
     },
-    outDir: resolve(__dirname, "public/build"),
+    outDir: resolve(__dirname, "dist/build"), // Separate output directory
+    publicDir: resolve(__dirname, "public"), // Separate public directory
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library

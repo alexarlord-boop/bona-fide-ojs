@@ -94,7 +94,7 @@ class TrustScoreUIPlugin extends GenericPlugin {
     public function addJavaScript($request, $templateMgr) {
         $templateMgr->addJavaScript(
             'trustScoreComponent',
-            $request->getBaseUrl() . '/' . $this->getPluginPath() . '/public/build/build.iife.js',
+            $request->getBaseUrl() . '/' . $this->getPluginPath() . '/dist/build/build.iife.js',
             [
                 'inline' => false,
                 'contexts' => ['backend'],

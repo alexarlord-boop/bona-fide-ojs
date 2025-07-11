@@ -3,17 +3,23 @@
   "version": "1.0.0",
   "description": "",
   "main": "vite.config.iife.js",
+  "type": "module",
+  "watch": {
+        "build": "src/*.js"
+      },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --config vite.config.iife.js",
     "dev": "vite build --watch --minify=false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "watch": "nodemon --watch src --ext js,vue --exec 'npm run build'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",
+    "nodemon": "^3.1.10",
     "vite": "^6.3.5"
   },
   "dependencies": {
