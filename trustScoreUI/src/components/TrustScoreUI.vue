@@ -3,19 +3,19 @@ console.log('BUILD TEST: ' + Math.random());
 const { useUrl } = pkp.modules.useUrl;
 const { useFetch } = pkp.modules.useFetch;
 import { ref, watch } from 'vue';
+import styles from './test.module.css'; // Import CSS module
 
 const props = defineProps({
   submissionId: Number,
 });
 
-// Init reactibe values for template
+// Init reactive values for template
 const submissionData = ref({});
 const authors = ref([]);
 const reviewers = ref([]);
 
-
 // Fetch submission data from the API
-const {apiUrl: submissionApiUrl} = useUrl(`submissions/${props.submissionId}`);
+const { apiUrl: submissionApiUrl } = useUrl(`submissions/${props.submissionId}`);
 const { data: submission, fetch: fetchSubmission } = useFetch(submissionApiUrl);
 
 fetchSubmission().then(() => {
@@ -25,21 +25,19 @@ fetchSubmission().then(() => {
   console.error('Error fetching submission data:', error);
 });
 
-
 // Fetch submission publication data from the API
-const {apiUrl: submissionPublicationApiUrl} = useUrl(`submissions/${props.submissionId}/publications/${props.submissionId}`);
+const { apiUrl: submissionPublicationApiUrl } = useUrl(`submissions/${props.submissionId}/publications/${props.submissionId}`);
 const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submissionPublicationApiUrl);
 
 // Fetch authors from the submission.publication
 const fetchAuthors = async () => {
   fetchSubmissionPublication().then(() => {
-  console.log('Fetched publication data:', publication.value);
+    console.log('Fetched publication data:', publication.value);
     authors.value = publication.value?.authors || [];
   }).catch(error => {
     console.error('Error fetching publication data:', error);
   });
-}
-
+};
 
 // Fetch reviewers users by ID from the submission.reviewAssignments
 const fetchReviewers = async () => {
@@ -52,12 +50,11 @@ const fetchReviewers = async () => {
       await fetchUser();
       reviewers.value.push(user.value);
     }
-    
     console.log('Fetched reviewers:', reviewers);
   } else {
     console.warn('No review assignments found in submission data.');
   }
-}
+};
 
 // Update reactive values when requested data changes
 // submission --> publication --> authors
@@ -71,12 +68,22 @@ watch(submission, (newSubmission) => {
     console.log('reviewers', reviewers);
   }
 });
-
 </script>
 
 <template>
   <div>
-    <pre>{{ authors }}</pre>
-    <pre>{{ reviewers }}</pre>
+    <h3>Authors</h3>
+    <ul>
+      <li class="styles.actor" v-for="author in authors" :key="author.id" :class="styles.actor">
+        {{ author.id }} {{ author.fullName }} {{ author.email }}
+      </li>
+    </ul>
+
+    <h3>Reviewers</h3>
+    <ul>
+      <li v-for="reviewer in reviewers" :key="reviewer.id" :class="styles.actor">
+        {{ reviewer.id }} {{ reviewer.fullName }} {{ reviewer.email }}
+      </li>
+    </ul>
   </div>
 </template>
