@@ -28,47 +28,17 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
     });
 
     store.extender.extendFn('getPrimaryItems', (items) => {
-       
         if (store.selectedMenuState.secondaryMenuItem === 'overview') {
-            console.log('=== Main.js Debug Info ===');
-            console.log('Store:', store);
-            console.log('Store state:', store.state);
-            console.log('Store state keys:', Object.keys(store.state || {}));
-            console.log('trustScores in store:', store.state?.trustScores);
-            
-            // Try to get data from global pkp object
-            console.log('Global pkp object:', window.pkp);
-            console.log('PKP state:', window.pkp?.state);
-            console.log('PKP trustScores:', window.pkp?.state?.trustScores);
-            console.log('Global trustScoresData:', window.trustScoresData);
-            
-            // Get data from multiple sources in order of preference
-            let trustScoresData = window.trustScoresData || window.pkp?.state?.trustScores || store.state?.trustScores || {};
-            
-            // If no data found, try to wait a bit and retry
-            if (!trustScoresData || Object.keys(trustScoresData).length === 0) {
-                console.log('No trustScores data found, waiting for injection...');
-                setTimeout(() => {
-                    trustScoresData = window.trustScoresData || window.pkp?.state?.trustScores || store.state?.trustScores || {};
-                    console.log('Retry - trustScores data:', trustScoresData);
-                }, 100);
-            }
-            
-            console.log('Final trustScores data:', trustScoresData);
-            console.log('==========================');
-            
+            const trustScoresData = window.trustScoresData || window.pkp?.state?.trustScores || store.state?.trustScores || {};
             items.push({
                 key: 'overview',
                 component: 'TrustScoreUI',
                 props: {
                     submissionId: store.submissionId,
-                    initData: trustScoresData
+                    initData: trustScoresData // Pass data as props
                 }
             });
         }
-    
         return items;
     });
-
-
 });
