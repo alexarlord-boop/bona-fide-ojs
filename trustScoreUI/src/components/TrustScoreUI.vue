@@ -3,7 +3,12 @@ console.log('BUILD TEST: ' + Math.random());
 const { useUrl } = pkp.modules.useUrl;
 const { useFetch } = pkp.modules.useFetch;
 import { ref, watch } from 'vue';
+import UserSection from './UserSection.vue'; // Import UserSection component
 import styles from './test.module.css'; // Import CSS module
+
+// Accordion state for authors and reviewers
+const authorAccordion = ref({});
+const reviewerAccordion = ref({});
 
 const props = defineProps({
   submissionId: Number,
@@ -56,6 +61,15 @@ const fetchReviewers = async () => {
   }
 };
 
+// Toggle accordion functions
+function toggleAuthor(index) {
+  authorAccordion.value[index] = !authorAccordion.value[index];
+}
+
+function toggleReviewer(index) {
+  reviewerAccordion.value[index] = !reviewerAccordion.value[index];
+}
+
 // Update reactive values when requested data changes
 // submission --> publication --> authors
 // submission --> reviewerAssignments --> reviewers
@@ -71,19 +85,8 @@ watch(submission, (newSubmission) => {
 </script>
 
 <template>
-  <div>
-    <h3>Authors</h3>
-    <ul>
-      <li class="styles.actor" v-for="author in authors" :key="author.id" :class="styles.actor">
-        {{ author.id }} {{ author.fullName }} {{ author.email }}
-      </li>
-    </ul>
-
-    <h3>Reviewers</h3>
-    <ul>
-      <li v-for="reviewer in reviewers" :key="reviewer.id" :class="styles.actor">
-        {{ reviewer.id }} {{ reviewer.fullName }} {{ reviewer.email }}
-      </li>
-    </ul>
+  <div class="">
+    <UserSection title="Authors" :users="authors" :accordionState="authorAccordion" @toggle="toggleAuthor" />
+    <UserSection title="Reviewers" :users="reviewers" :accordionState="reviewerAccordion" @toggle="toggleReviewer" />
   </div>
 </template>
