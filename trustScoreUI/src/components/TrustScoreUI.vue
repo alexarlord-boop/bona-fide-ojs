@@ -38,7 +38,15 @@ const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submis
 const fetchAuthors = async () => {
   fetchSubmissionPublication().then(() => {
     console.log('Fetched publication data:', publication.value);
-    authors.value = publication.value?.authors || [];
+    // Add mock subscores to each author
+    authors.value = (publication.value?.authors || []).map(author => ({
+      ...author,
+      subscores: {
+        Reputation: Math.floor(Math.random() * 41) + 60, // 60-100
+        Activity: Math.floor(Math.random() * 51) + 40,   // 40-90
+        Verification: Math.floor(Math.random() * 31) + 70 // 70-100
+      }
+    }));
   }).catch(error => {
     console.error('Error fetching publication data:', error);
   });
@@ -53,7 +61,15 @@ const fetchReviewers = async () => {
       const { apiUrl: userApiUrl } = useUrl(`users/${id}`);
       const { data: user, fetch: fetchUser } = useFetch(userApiUrl);
       await fetchUser();
-      reviewers.value.push(user.value);
+      // Add mock subscores to each reviewer
+      reviewers.value.push({
+        ...user.value,
+        subscores: {
+          Reputation: Math.floor(Math.random() * 41) + 60, // 60-100
+          Activity: Math.floor(Math.random() * 51) + 40,   // 40-90
+          Verification: Math.floor(Math.random() * 31) + 70 // 70-100
+        }
+      });
     }
     console.log('Fetched reviewers:', reviewers);
   } else {

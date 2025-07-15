@@ -12,7 +12,7 @@
             <div><strong>ID:</strong> {{ user.id }}</div>
             <div><strong>Name:</strong> {{ user.fullName }}</div>
             <div>
-              <strong>Email:</strong>
+              <strong>Email: </strong>
               <a :href="'mailto:' + user.email">{{ user.email }}</a>
             </div>
           </div>
