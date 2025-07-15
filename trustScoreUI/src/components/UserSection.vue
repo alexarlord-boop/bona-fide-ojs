@@ -153,13 +153,20 @@
     font-size: 0.78rem;
     transition: width 0.3s ease;
   }
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.25s ease;
-  }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
+/* .fade-enter-active,
+.fade-leave-active {
+transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+overflow: hidden;
+}
+.fade-enter-from,
+.fade-leave-to {
+max-height: 0;
+opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+max-height: 500px; 
+opacity: 1;
+} */
   </style>
   
