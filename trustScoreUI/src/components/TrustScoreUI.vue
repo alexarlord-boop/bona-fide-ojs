@@ -42,9 +42,33 @@ const fetchAuthors = async () => {
     authors.value = (publication.value?.authors || []).map(author => ({
       ...author,
       subscores: {
-        Reputation: Math.floor(Math.random() * 41) + 60, // 60-100
-        Activity: Math.floor(Math.random() * 51) + 40,   // 40-90
-        Verification: Math.floor(Math.random() * 31) + 70 // 70-100
+        // Reputation: Math.floor(Math.random() * 41) + 60, // 60-100
+        // Activity: Math.floor(Math.random() * 51) + 40,   // 40-90
+        // Verification: Math.floor(Math.random() * 31) + 70 // 70-100
+        Reputation: {
+        total: 200,
+        details: [
+          { label: 'Academic Presence', value: 100 },
+          { label: 'Educator Career', value: 50 },
+          { label: 'Journalism', value: 20 },
+          { label: 'Other', value: 20 },
+          { label: 'Something', value: 10 }
+        ]
+      },
+      Activity: {
+        total: 70,
+        details: [
+          { label: 'Forum Posts', value: 30 },
+          { label: 'Events Attended', value: 40 }
+        ]
+      },
+      Verification: {
+        total: 90,
+        details: [
+          { label: 'ID Verified', value: 50 },
+          { label: 'Institutional Email', value: 40 }
+        ]
+      }
       }
     }));
   }).catch(error => {

@@ -32,13 +32,10 @@
             </div>
   
             <div v-if="user.subscores" class="subscores">
-              <div v-for="(score, label) in user.subscores" :key="label" class="subscore-bar">
-                <div class="label">{{ label }}</div>
-                <div class="bar-container">
-                  <div class="bar" :style="{ width: score + '%' }">{{ score }}%</div>
-                </div>
-              </div>
+              <ScoreBar  :subscores="user.subscores"/>
+            
             </div>
+            
           </div>
         </transition>
       </div>
@@ -46,6 +43,7 @@
   </template>
   
   <script setup>
+  import ScoreBar from './ScoreBar.vue';
   defineProps({
     title: String,
     users: Array,
