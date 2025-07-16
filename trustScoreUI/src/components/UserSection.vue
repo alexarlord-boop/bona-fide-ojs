@@ -9,12 +9,15 @@
       <div v-for="(user, index) in users" :key="user.id" class="user-card">
         <div class="user-summary">
           <div class="user-info">
-            <div><strong>ID:</strong> {{ user.id }}</div>
-            <div><strong>Name:</strong> {{ user.fullName }}</div>
-            <div>
-              <strong>Email: </strong>
-              <a :href="'mailto:' + user.email">{{ user.email }}</a>
+            
+            <div class="user-contact">
+              <div><strong> {{ user.fullName }} </strong></div>
+              <div>
+                email: 
+                <a :href="'mailto:' + user.email">{{ user.email }}</a>
+              </div>
             </div>
+           
           </div>
           <button @click="emit('toggle', index)" class="toggle-btn">
             {{ accordionState[index] ? 'Hide Details' : 'Show Details' }}
@@ -23,19 +26,9 @@
   
         <transition name="fade">
           <div v-if="accordionState[index]" class="user-details">
-            <div>
-              <strong>Affiliation:</strong>
-              {{ user.affiliation?.en || user.affiliation || 'N/A' }}
-            </div>
-  
             <div v-if="user.orcid">
               <strong>ORCID:</strong>
               <a :href="user.orcid" target="_blank">{{ user.orcid }}</a>
-            </div>
-  
-            <div>
-              <strong>Trust Score:</strong>
-              <span class="badge">{{ user.trustScore ?? 'N/A' }}</span>
             </div>
   
             <div v-if="user.subscores" class="subscores">
@@ -169,4 +162,3 @@ max-height: 500px;
 opacity: 1;
 } */
   </style>
-  
