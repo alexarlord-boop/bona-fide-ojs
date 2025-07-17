@@ -9,13 +9,23 @@ const mouseX = ref(0);
 const mouseY = ref(0);
 
 function getBarStyle(details, index, total) {
-  const prevWidth = details.slice(0, index).reduce((sum, d) => sum + d.value, 0);
-  const currentWidth = (details[index].value / total) * 100;
-  return {
-    left: (prevWidth / total) * 100 + '%',
-    width: currentWidth + '%',
+    const value = details[index].value;
+    if (value === 0) return null;
+
+    const scaled = Math.log(value + 1); // log(1) = 0, log(10) > log(2), etc.
+    const totalScaled = details.reduce((sum, d) => sum + Math.log(d.value + 1), 0);
+
+    const left = details
+    .slice(0, index)
+    .reduce((sum, d) => sum + Math.log(d.value + 1), 0) / totalScaled;
+
+    const width = scaled / totalScaled;
+
+    return {
+    left: (left * 100).toFixed(2) + '%',
+    width: (width * 100).toFixed(2) + '%',
     backgroundColor: pickColor(index),
-  };
+    };
 }
 
 function pickColor(index) {
@@ -23,9 +33,22 @@ function pickColor(index) {
   return colors[index % colors.length];
 }
 
-function shouldShowLabel(value, total) {
-  const percent = (value / total) * 100;
-  return percent >= 20;
+// function shouldShowLabel(value, total) {
+//   if (value <= 0) return false;
+//   const percent = (value / total) * 100;
+
+//   const scaled = Math.log10(value + 1) / Math.log10(total + 1);
+//   return scaled >= 0.3;
+// }
+
+function shouldShowLabel(value, details) {
+  if (value <= 0) return false;
+
+  const scaledValue = Math.log(value + 1);
+  const totalScaled = details.reduce((sum, d) => sum + Math.log(d.value + 1), 0);
+  const percent = (scaledValue / totalScaled) * 100;
+
+  return percent >= 8;
 }
 
 function handleMouseEnter(scoreData, label, event) {
@@ -62,7 +85,7 @@ function handleMouseLeave() {
           @mousemove="(e) => handleMouseEnter(scoreData, label, e)"
           @mouseleave="handleMouseLeave"
         >
-          <template v-if="shouldShowLabel(detail.value, scoreData.total)">
+          <template v-if="shouldShowLabel(detail.value, scoreData.details)">
             {{ detail.label }} ({{ detail.value }})
           </template>
           <template v-else>
@@ -102,6 +125,7 @@ function handleMouseLeave() {
   line-height: 1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  min-width: 50px;
 }
 .bar-detail:hover {
   opacity: 0.85;
