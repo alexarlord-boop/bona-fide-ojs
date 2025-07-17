@@ -46,24 +46,46 @@ class BulkRequest(BaseModel):
 @app.post("/bulk-verify")
 async def bulk_verify(request: BulkRequest):
     """
-    Endpoint to process bulk users (authors or reviewers) and populate their score field.
-    Simulates a throttle by adding a 500ms delay.
+    Endpoint to process bulk users (authors or reviewers) and populate their subscores.
     """
+    print("Received request:", request.dict())  # Log the incoming request for debugging
+
     updated_users = []
 
     for user in request.users:
-        # Example logic
-        if request.role == "author":
-            user.score = random.randint(0, 100)
-        elif request.role == "reviewer":
-            user.score = random.randint(0, 100)
-        else:
-            user.score = 0  # Default score
+        # Randomize subscores
+        def random_subscores(labels, total):
+            remaining = total
+            details = []
+            for label in labels[:-1]:
+                value = random.randint(0, remaining)
+                details.append({"label": label, "value": value})
+                remaining -= value
+            details.append({"label": labels[-1], "value": remaining})
+            return details
 
-        updated_users.append(user)
-
-     # Simulate a delay
-    await asyncio.sleep(1)
+        user_data = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "subscores": {
+                "Reputation": {
+                    "total": 200,
+                    "details": random_subscores(
+                        ["Academic Presence", "Educator Career", "Journalism", "Other", "Something"], 200
+                    ),
+                },
+                "Activity": {
+                    "total": 70,
+                    "details": random_subscores(["Forum Posts", "Events Attended"], 70),
+                },
+                "Verification": {
+                    "total": 90,
+                    "details": random_subscores(["ID Verified", "Institutional Email"], 90),
+                },
+            },
+        }
+        updated_users.append(user_data)
 
     return {"role": request.role, "users": updated_users}
 
