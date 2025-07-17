@@ -11,7 +11,7 @@
           <div class="user-info">
             
             <div class="user-contact">
-              <div><strong> {{ user.fullName }} </strong></div>
+              <div><strong> {{ user.name }} </strong></div>
               <div>
                 email: 
                 <a :href="'mailto:' + user.email">{{ user.email }}</a>
