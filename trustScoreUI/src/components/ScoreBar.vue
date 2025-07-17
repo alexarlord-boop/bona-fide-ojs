@@ -3,7 +3,8 @@ import { ref } from 'vue';
 
 const props = defineProps(['subscores']);
 
-const hoveredDetail = ref(null);
+const hoveredScoreData = ref(null);
+const hoveredLabel = ref('');
 const mouseX = ref(0);
 const mouseY = ref(0);
 
@@ -27,14 +28,16 @@ function shouldShowLabel(value, total) {
   return percent >= 20;
 }
 
-function handleMouseEnter(detail, event) {
-  hoveredDetail.value = detail;
+function handleMouseEnter(scoreData, label, event) {
+  hoveredScoreData.value = scoreData;
+  hoveredLabel.value = label;
   mouseX.value = event.pageX;
   mouseY.value = event.pageY;
 }
 
 function handleMouseLeave() {
-  hoveredDetail.value = null;
+  hoveredScoreData.value = null;
+  hoveredLabel.value = '';
 }
 </script>
 
@@ -55,8 +58,8 @@ function handleMouseLeave() {
           :key="detail.label"
           class="bar-detail absolute top-0 h-full text-xs text-white px-1 flex items-center"
           :style="getBarStyle(scoreData.details, index, scoreData.total)"
-          @mouseenter="(e) => handleMouseEnter(detail, e)"
-          @mousemove="(e) => handleMouseEnter(detail, e)"
+          @mouseenter="(e) => handleMouseEnter(scoreData, label, e)"
+          @mousemove="(e) => handleMouseEnter(scoreData, label, e)"
           @mouseleave="handleMouseLeave"
         >
           <template v-if="shouldShowLabel(detail.value, scoreData.total)">
@@ -71,11 +74,19 @@ function handleMouseLeave() {
 
     <!-- Tooltip -->
     <div
-      v-if="hoveredDetail"
+      v-if="hoveredScoreData"
       class="tooltip"
-      :style="{ top: mouseY + 10 + 'px', left: mouseX + 10 + 'px' }"
+      :style="{ top: mouseY + 12 + 'px', left: mouseX + 12 + 'px' }"
     >
-      <strong>{{ hoveredDetail.label }}</strong>: {{ hoveredDetail.value }}
+      <div class="font-semibold mb-1">{{ hoveredLabel }} — total: {{ hoveredScoreData.total }}</div>
+      <div v-for="(detail, i) in hoveredScoreData.details" :key="detail.label" class="tooltip-row">
+        <span
+          class="color-dot"
+          :style="{ backgroundColor: pickColor(i) }"
+        />
+        <span class="detail-label">{{ detail.label }}:</span>
+        <span class="detail-value">{{ detail.value }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -92,21 +103,39 @@ function handleMouseLeave() {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .bar-detail:hover {
   opacity: 0.85;
 }
 
-/* Tooltip styles */
+/* Tooltip */
 .tooltip {
   position: fixed;
   z-index: 9999;
   background: rgba(33, 33, 33, 0.95);
   color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border-radius: 6px;
   font-size: 0.75rem;
   pointer-events: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  min-width: 180px;
+}
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  margin: 2px 0;
+}
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.detail-label {
+  flex: 1;
+  font-weight: 400;
+}
+.detail-value {
+  font-weight: 600;
 }
 </style>
