@@ -44,6 +44,11 @@ const fetchAuthors = async () => {
       id: author.id,
       name: author.fullName,
       email: author.email,
+      
+      // more details
+      orcid: author.orcid || '',
+      affiliations: author.affiliations || [],
+
       score: 0,
     }));
 
