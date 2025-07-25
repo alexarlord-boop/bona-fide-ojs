@@ -62,6 +62,11 @@ function handleMouseLeave() {
   hoveredScoreData.value = null;
   hoveredLabel.value = '';
 }
+
+function getClass(value) {
+  return `bar-detail absolute top-0 h-full text-xs text-white px-1 flex items-center ${value > 0 ? '' : 'hidden'}`;
+}
+
 </script>
 
 <template>
@@ -79,7 +84,7 @@ function handleMouseLeave() {
         <div
           v-for="(detail, index) in scoreData.details"
           :key="detail.label"
-          class="bar-detail absolute top-0 h-full text-xs text-white px-1 flex items-center"
+          :class="getClass(detail.value)"
           :style="getBarStyle(scoreData.details, index, scoreData.total)"
           @mouseenter="(e) => handleMouseEnter(scoreData, label, e)"
           @mousemove="(e) => handleMouseEnter(scoreData, label, e)"
