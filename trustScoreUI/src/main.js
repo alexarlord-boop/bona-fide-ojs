@@ -15,11 +15,11 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
             items: [
                 {
                     key: 'overview',
-                    label: 'Trust Overview',
+                    label: 'Overview',
                     state: {
                         primaryMenuItem: 'trustScoreTab',
                         secondaryMenuItem: 'overview',
-                        title: 'Bona Fide: Trust Overview'
+                        title: 'Bona Fide: Overview'
                     }
                 }
             ]
