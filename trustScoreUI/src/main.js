@@ -1,6 +1,8 @@
 import TrustScoreUI from "./components/TrustScoreUI.vue";
+import Sidebar from "./components/Sidebar.vue";
 
 pkp.registry.registerComponent('TrustScoreUI', TrustScoreUI);
+pkp.registry.registerComponent('Sidebar', Sidebar);
 
 pkp.registry.storeExtend('workflow', (piniaContext) => {
 	const store = piniaContext.store;
@@ -41,4 +43,62 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
         }
         return items;
     });
+
+    store.extender.extendFn('getPrimaryControlsLeft', (items) => {
+        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+            items.push({
+                key: 'trustScoreOverview',
+                label: 'Bona Fide Overview',
+                component: 'Sidebar',
+                props: {
+                    submissionId: store.submissionId,
+                }
+            });
+        }
+        return items;
+
+    });
+    store.extender.extendFn('getPrimaryControlsRight', (items) => {
+        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+            items.push({
+                key: 'trustScoreOverview',
+                label: 'Bona Fide Overview',
+                component: 'Sidebar',
+                props: {
+                    submissionId: store.submissionId,
+                }
+            });
+        }
+        return items;
+
+    });
+    store.extender.extendFn('getActionItems', (items) => {
+        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+            items.push({
+                key: 'trustScoreOverview',
+                label: 'Bona Fide Overview',
+                component: 'Sidebar',
+                props: {
+                    submissionId: store.submissionId,
+                }
+            });
+        }
+        return items;
+
+    });
+    store.extender.extendFn('getSecondaryItems', (items) => {
+        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+            items.push({
+                key: 'trustScoreOverview',
+                label: 'Bona Fide Overview',
+                component: 'Sidebar',
+                props: {
+                    submissionId: store.submissionId,
+                }
+            });
+        }
+        return items;
+
+    });
+
 });
