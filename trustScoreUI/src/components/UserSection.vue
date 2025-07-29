@@ -34,6 +34,8 @@
               <a :href="user.orcid" target="_blank">{{ user.orcid }}</a>
             </div>
   
+            <br/>
+      
             <div v-if="user.subscores" class="subscores">
               <ScoreBar  :subscores="user.subscores"/>
             
