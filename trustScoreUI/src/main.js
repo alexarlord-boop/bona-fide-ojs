@@ -1,10 +1,18 @@
 import TrustScoreUI from "./components/TrustScoreUI.vue";
 import Sidebar from "./components/Sidebar.vue";
+import SampleComponent from "./components/SampleComponent.vue";
 
 pkp.registry.registerComponent('TrustScoreUI', TrustScoreUI);
 pkp.registry.registerComponent('Sidebar', Sidebar);
+pkp.registry.registerComponent('SampleComponent', SampleComponent);
 
-pkp.registry.storeExtend('workflow', (piniaContext) => {
+const { useCurrentUser } = pkp.modules.useCurrentUser;
+const cu = useCurrentUser();
+const isUserEditor = cu?.hasCurrentUserAtLeastOneRole([16]); // 16=Main Editor
+const haveBackend = true // Assuming the backend is available as service
+
+if (haveBackend && isUserEditor) {
+    pkp.registry.storeExtend('workflow', (piniaContext) => {
 	const store = piniaContext.store;
 
 	store.extender.extendFn('getMenuItems', (items) => {
@@ -63,7 +71,7 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
             items.push({
                 key: 'trustScoreOverview',
                 label: 'Bona Fide Overview',
-                component: 'Sidebar',
+                component: 'SampleComponent',
                 props: {
                     submissionId: store.submissionId,
                 }
@@ -77,7 +85,7 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
             items.push({
                 key: 'trustScoreOverview',
                 label: 'Bona Fide Overview',
-                component: 'Sidebar',
+                component: 'SampleComponent',
                 props: {
                     submissionId: store.submissionId,
                 }
@@ -91,7 +99,7 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
             items.push({
                 key: 'trustScoreOverview',
                 label: 'Bona Fide Overview',
-                component: 'Sidebar',
+                component: 'SampleComponent',
                 props: {
                     submissionId: store.submissionId,
                 }
@@ -102,3 +110,6 @@ pkp.registry.storeExtend('workflow', (piniaContext) => {
     });
 
 });
+} else {
+    console.warn('TrustScoreUI plugin is only available for editors.');
+}
