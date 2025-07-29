@@ -2,9 +2,33 @@
 console.log('BUILD TEST: ' + Math.random());
 const { useUrl } = pkp.modules.useUrl;
 const { useFetch } = pkp.modules.useFetch;
+const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
 import styles from './test.module.css'; // Import CSS module
+
+const cu = useCurrentUser();
+console.log('--- Current User Info ---');
+// console.log('ID:', cu?.getCurrentUserId());
+// console.log('Name:', cu?.getCurrentUserName());
+// console.log('Full Name:', cu?.getCurrentUserFullName());
+// console.log('Initials:', cu?.getCurrentUserInitials());
+
+// console.log('--- Logged in As Info ---');
+// console.log('Logged In As (object):', cu?.getUserLoggedInAs());
+// console.log('Logged In As UserName:', cu?.getUserLoggedInAsUserName());
+// console.log('Logged In As Initials:', cu?.getUserLoggedInAsInitials());
+
+console.log('--- Roles ---');
+console.log('Has Role:', cu?.hasCurrentUserAtLeastOneRole([16])); // 0=Admin, 1=Manager, 16=Main Editor, 512=Reviewer
+// console.log('Has Role In Stage (e.g., stage 1):', cu?.hasCurrentUserAtLeastOneAssignedRoleInStage(1, [512]));
+// console.log('Has Role In Any Stage:', cu?.hasCurrentUserAtLeastOneAssignedRoleInAnyStage(512));
+// console.log('Is Reviewer:', cu?.isCurrentUserAssignedAsReviewer(1)); // stageId
+
+// console.log('--- Notifications ---');
+// console.log('Unread Notifications:', cu?.getUnreadNotifications());
+
+const isUserEditor = cu?.hasCurrentUserAtLeastOneRole([16]); // 16=Main Editor
 
 // Accordion state for authors and reviewers
 const authorAccordion = ref({});
@@ -24,10 +48,10 @@ const { apiUrl: submissionApiUrl } = useUrl(`submissions/${props.submissionId}`)
 const { data: submission, fetch: fetchSubmission } = useFetch(submissionApiUrl);
 
 fetchSubmission().then(() => {
-  console.log('Fetched submission data:', submission.value);
+  // console.log('Fetched submission data:', submission.value);
   submissionData.value = submission.value;
 }).catch(error => {
-  console.error('Error fetching submission data:', error);
+  // console.error('Error fetching submission data:', error);
 });
 
 // Fetch submission publication data from the API
@@ -38,7 +62,7 @@ const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submis
 const fetchAuthors = async () => {
   try {
     await fetchSubmissionPublication();
-    console.log('Fetched publication data:', publication.value);
+    // console.log('Fetched publication data:', publication.value);
 
     const authorIds = (publication.value?.authors || []).map(author => ({
       id: author.id,
@@ -52,7 +76,7 @@ const fetchAuthors = async () => {
       score: 0,
     }));
 
-    console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
+    // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
 
 
     if (authorIds.length > 0) {
@@ -93,7 +117,7 @@ const fetchReviewers = async () => {
       });
     }
 
-    console.log('Fetched reviewers data:', reviewers.value);
+    // console.log('Fetched reviewers data:', reviewers.value);
 
     const reviewerIds = reviewers.value.map(reviewer => ({
         id: reviewer.id,
@@ -101,7 +125,7 @@ const fetchReviewers = async () => {
         email: reviewer.email || '', // Fallback if email is missing
       }));
 
-    console.log('Sending JSON for reviewers:', JSON.stringify({ role: 'reviewer', users: reviewerIds }));
+    // console.log('Sending JSON for reviewers:', JSON.stringify({ role: 'reviewer', users: reviewerIds }));
 
     if (reviewerIds.length > 0) {
       const response = await fetch('http://localhost:8000/bulk-verify', {
@@ -121,7 +145,7 @@ const fetchReviewers = async () => {
       }));
     }
 
-    console.log('Fetched reviewers:', reviewers);
+    // console.log('Fetched reviewers:', reviewers);
   } else {
     console.warn('No review assignments found in submission data.');
   }
@@ -152,7 +176,7 @@ watch(submission, (newSubmission) => {
 
 <template>
   <div class="">
-    <UserSection title="Authors" :users="authors" :accordionState="authorAccordion" @toggle="toggleAuthor" />
-    <UserSection title="Reviewers" :users="reviewers" :accordionState="reviewerAccordion" @toggle="toggleReviewer" />
+    <UserSection v-if="isUserEditor" title="Authors" :users="authors" :accordionState="authorAccordion" @toggle="toggleAuthor" />
+    <UserSection v-if="isUserEditor" title="Reviewers" :users="reviewers" :accordionState="reviewerAccordion" @toggle="toggleReviewer" />
   </div>
 </template>
