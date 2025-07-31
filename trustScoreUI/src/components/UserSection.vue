@@ -37,8 +37,7 @@
             <br/>
       
             <div v-if="user.subscores" class="subscores">
-              <ScoreBar  :subscores="user.subscores"/>
-            
+              <ScoreBar :subscores="convertSubscoresToArray(user.subscores)" />
             </div>
             
           </div>
@@ -56,6 +55,19 @@
   });
   
   const emit = defineEmits(['toggle']);
+
+  function convertSubscoresToArray(subscores) {
+    const converted = {};
+    for (const [key, value] of Object.entries(subscores)) {
+      converted[key] = {
+        ...value,
+        details: Array.isArray(value.details)
+          ? value.details
+          : Object.entries(value.details).map(([label, val]) => ({ label, value: val })),
+      };
+    }
+    return converted;
+  }
   </script>
   
   <style scoped>

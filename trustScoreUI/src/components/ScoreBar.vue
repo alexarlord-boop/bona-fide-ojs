@@ -9,6 +9,11 @@ const mouseX = ref(0);
 const mouseY = ref(0);
 
 function getBarStyle(details, index, total) {
+    if (!Array.isArray(details)) {
+        console.error("Expected 'details' to be an array, but got:", details);
+        details = Object.entries(details).map(([label, value]) => ({ label, value })); // Convert object to array
+    }
+
     const value = details[index].value;
     if (value === 0) return null;
 
@@ -42,6 +47,11 @@ function pickColor(index) {
 // }
 
 function shouldShowLabel(value, details) {
+  if (!Array.isArray(details)) {
+    console.error("Expected 'details' to be an array, but got:", details);
+    return false;
+  }
+
   if (value <= 0) return false;
 
   const scaledValue = Math.log(value + 1);

@@ -58,26 +58,35 @@ fetchSubmission().then(() => {
 const { apiUrl: submissionPublicationApiUrl } = useUrl(`submissions/${props.submissionId}/publications/${props.submissionId}`);
 const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submissionPublicationApiUrl);
 
+// Helper function to randomize subscores
+function randomizeSubscores(categories, total) {
+  const subscores = {};
+  let remaining = total;
+
+  categories.forEach((category, index) => {
+    if (index === categories.length - 1) {
+      subscores[category] = remaining;
+    } else {
+      const score = Math.floor(Math.random() * remaining);
+      subscores[category] = score;
+      remaining -= score;
+    }
+  });
+
+  return subscores;
+}
+
 // Fetch authors from the submission.publication
 const fetchAuthors = async () => {
   try {
     await fetchSubmissionPublication();
-    // console.log('Fetched publication data:', publication.value);
-
     const authorIds = (publication.value?.authors || []).map(author => ({
       id: author.id,
       name: author.fullName,
       email: author.email,
-      
-      // more details
       orcid: author.orcid || '',
       affiliations: author.affiliations || [],
-
-      score: 0,
     }));
-
-    // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
-
 
     if (authorIds.length > 0) {
       const response = await fetch('http://localhost:8000/bulk-verify', {
@@ -86,9 +95,7 @@ const fetchAuthors = async () => {
         body: JSON.stringify({ role: 'author', users: authorIds }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Backend error: ${response.statusText}`);
-      }
+      if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
 
       const data = await response.json();
       authors.value = data.users.map(user => ({
@@ -97,57 +104,98 @@ const fetchAuthors = async () => {
       }));
     }
   } catch (error) {
-    console.error('Error fetching authors or subscores:', error);
+    console.warn('Error fetching authors or subscores:', error);
+    alert('Backend is unavailable. Using mock data for authors.');
+    console.log('Using mock data for authors.');
+    authors.value = (publication.value?.authors || []).map(author => ({
+      id: author.id,
+      name: author.fullName,
+      email: author.email,
+      orcid: author.orcid || '',
+      affiliations: author.affiliations || [],
+      subscores: {
+        Reputation: {
+          total: 200,
+          details: randomizeSubscores(
+            ["Academic Presence", "Educator Career", "Journalism", "Other", "Something"],
+            200
+          ),
+        },
+        Activity: {
+          total: 70,
+          details: randomizeSubscores(["Forum Posts", "Events Attended"], 70),
+        },
+        Verification: {
+          total: 90,
+          details: randomizeSubscores(["ID Verified", "Institutional Email"], 90),
+        },
+      },
+    }));
   }
 };
 
 // Fetch reviewers users by ID from the submission.reviewAssignments
 const fetchReviewers = async () => {
-  if (submission.value && submission.value.reviewAssignments) {
-    const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
-    for (const id of ids) {
-      // Fetch user by ID
-      const { apiUrl: userApiUrl } = useUrl(`users/${id}`);
-      const { data: user, fetch: fetchUser } = useFetch(userApiUrl);
-      await fetchUser();
-      // Add mock subscores to each reviewer
-      reviewers.value.push({
-        ...user.value,
-        subscores: {}
-      });
-    }
+  try {
+    if (submission.value && submission.value.reviewAssignments) {
+      const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
+      const reviewerData = [];
 
-    // console.log('Fetched reviewers data:', reviewers.value);
-
-    const reviewerIds = reviewers.value.map(reviewer => ({
-        id: reviewer.id,
-        name: reviewer.fullName || '', // Fallback if name is missing
-        email: reviewer.email || '', // Fallback if email is missing
-      }));
-
-    // console.log('Sending JSON for reviewers:', JSON.stringify({ role: 'reviewer', users: reviewerIds }));
-
-    if (reviewerIds.length > 0) {
-      const response = await fetch('http://localhost:8000/bulk-verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: 'reviewer', users: reviewerIds }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Backend error: ${response.statusText}`);
+      for (const id of ids) {
+        const { apiUrl: userApiUrl } = useUrl(`users/${id}`);
+        const { data: user, fetch: fetchUser } = useFetch(userApiUrl);
+        await fetchUser();
+        reviewerData.push({
+          id: user.value.id,
+          name: user.value.fullName || '',
+          email: user.value.email || '',
+        });
       }
 
-      const data = await response.json();
-      reviewers.value = data.users.map(user => ({
-        ...user,
-        subscores: user.subscores, // Use subscores from backend
-      }));
-    }
+      if (reviewerData.length > 0) {
+        const response = await fetch('http://localhost:8000/bulk-verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: 'reviewer', users: reviewerData }),
+        });
 
-    // console.log('Fetched reviewers:', reviewers);
-  } else {
-    console.warn('No review assignments found in submission data.');
+        if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+
+        const data = await response.json();
+        reviewers.value = data.users.map(user => ({
+          ...user,
+          subscores: user.subscores, // Use subscores from backend
+        }));
+      }
+    } else {
+      console.warn('No review assignments found in submission data.');
+    }
+  } catch (error) {
+    console.warn('Error fetching reviewers or subscores:', error);
+    alert('Backend is unavailable. Using mock data for reviewers.');
+    console.log('Using mock data for reviewers.');
+    reviewers.value = (submission.value?.reviewAssignments || []).map(assignment => ({
+      id: assignment.reviewerId,
+      name: `Reviewer ${assignment.reviewerId}`,
+      email: '',
+      subscores: {
+        Reputation: {
+          total: 200,
+          details: randomizeSubscores(
+            ["Academic Presence", "Educator Career", "Journalism", "Other", "Something"],
+            200
+          ),
+        },
+        Activity: {
+          total: 70,
+          details: randomizeSubscores(["Forum Posts", "Events Attended"], 70),
+        },
+        Verification: {
+          total: 90,
+          details: randomizeSubscores(["ID Verified", "Institutional Email"], 90),
+        },
+      },
+    }));
   }
 };
 
