@@ -5,7 +5,6 @@ const { useFetch } = pkp.modules.useFetch;
 const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
-import styles from './test.module.css'; // Import CSS module
 
 const cu = useCurrentUser();
 console.log('--- Current User Info ---');
