@@ -1,11 +1,25 @@
 <template>
     <div class="component">
-        <Button class="details-btn">↻ Reload</Button>
-        <Button class="details-btn">Get PDF report</Button>
-        <Button class="details-btn">Get relation graph</Button>
+        <button class="details-btn" >↻ Reload</button>
+        <button class="details-btn" @click="generatePDFReport">Get PDF report</button>
+        <button class="details-btn" >Get relation graph</button>
     </div>
 </template>
 
+<script setup>
+import { generatePDF } from "../utils/pdfGenerator";
+
+function generatePDFReport() {
+    const cachedData = sessionStorage.getItem('trustScoreData');
+    if (!cachedData) {
+        console.error('No cached data found for PDF generation.');
+        return;
+    }
+
+    const data = JSON.parse(cachedData);
+    generatePDF(data);
+}
+</script>
 
 <style>
 .component {
@@ -15,7 +29,6 @@
 
 .details-btn {
     max-width: 150px;
-    /* margin-right: 10px; */
     padding: 0 15px;
     color:  #1976d2;
     font-size: 0.8rem;
@@ -24,10 +37,10 @@
     cursor: pointer;
     float: right; /* Align to the right */
     margin-left: auto; /* Ensure proper alignment */
-  }
+}
 
-  .details-btn:hover {
+.details-btn:hover {
     background: #e3f2fd;
     color: #0d47a1;
-  }
-  </style>
+}
+</style>

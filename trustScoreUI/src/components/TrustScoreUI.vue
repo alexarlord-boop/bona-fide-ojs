@@ -57,35 +57,26 @@ fetchSubmission().then(() => {
 const { apiUrl: submissionPublicationApiUrl } = useUrl(`submissions/${props.submissionId}/publications/${props.submissionId}`);
 const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submissionPublicationApiUrl);
 
-// Helper function to randomize subscores
-function randomizeSubscores(categories, total) {
-  const subscores = {};
-  let remaining = total;
-
-  categories.forEach((category, index) => {
-    if (index === categories.length - 1) {
-      subscores[category] = remaining;
-    } else {
-      const score = Math.floor(Math.random() * remaining);
-      subscores[category] = score;
-      remaining -= score;
-    }
-  });
-
-  return subscores;
-}
-
 // Fetch authors from the submission.publication
 const fetchAuthors = async () => {
   try {
     await fetchSubmissionPublication();
+    // console.log('Fetched publication data:', publication.value);
+
     const authorIds = (publication.value?.authors || []).map(author => ({
       id: author.id,
       name: author.fullName,
       email: author.email,
+      
+      // more details
       orcid: author.orcid || '',
       affiliations: author.affiliations || [],
+
+      score: 0,
     }));
+
+    // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
+
 
     if (authorIds.length > 0) {
       const response = await fetch('http://localhost:8000/bulk-verify', {
@@ -94,7 +85,9 @@ const fetchAuthors = async () => {
         body: JSON.stringify({ role: 'author', users: authorIds }),
       });
 
-      if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Backend error: ${response.statusText}`);
+      }
 
       const data = await response.json();
       authors.value = data.users.map(user => ({
@@ -103,98 +96,57 @@ const fetchAuthors = async () => {
       }));
     }
   } catch (error) {
-    console.warn('Error fetching authors or subscores:', error);
-    alert('Backend is unavailable. Using mock data for authors.');
-    console.log('Using mock data for authors.');
-    authors.value = (publication.value?.authors || []).map(author => ({
-      id: author.id,
-      name: author.fullName,
-      email: author.email,
-      orcid: author.orcid || '',
-      affiliations: author.affiliations || [],
-      subscores: {
-        Reputation: {
-          total: 200,
-          details: randomizeSubscores(
-            ["Academic Presence", "Educator Career", "Journalism", "Other", "Something"],
-            200
-          ),
-        },
-        Activity: {
-          total: 70,
-          details: randomizeSubscores(["Forum Posts", "Events Attended"], 70),
-        },
-        Verification: {
-          total: 90,
-          details: randomizeSubscores(["ID Verified", "Institutional Email"], 90),
-        },
-      },
-    }));
+    console.error('Error fetching authors or subscores:', error);
   }
 };
 
 // Fetch reviewers users by ID from the submission.reviewAssignments
 const fetchReviewers = async () => {
-  try {
-    if (submission.value && submission.value.reviewAssignments) {
-      const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
-      const reviewerData = [];
-
-      for (const id of ids) {
-        const { apiUrl: userApiUrl } = useUrl(`users/${id}`);
-        const { data: user, fetch: fetchUser } = useFetch(userApiUrl);
-        await fetchUser();
-        reviewerData.push({
-          id: user.value.id,
-          name: user.value.fullName || '',
-          email: user.value.email || '',
-        });
-      }
-
-      if (reviewerData.length > 0) {
-        const response = await fetch('http://localhost:8000/bulk-verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ role: 'reviewer', users: reviewerData }),
-        });
-
-        if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
-
-        const data = await response.json();
-        reviewers.value = data.users.map(user => ({
-          ...user,
-          subscores: user.subscores, // Use subscores from backend
-        }));
-      }
-    } else {
-      console.warn('No review assignments found in submission data.');
+  if (submission.value && submission.value.reviewAssignments) {
+    const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
+    for (const id of ids) {
+      // Fetch user by ID
+      const { apiUrl: userApiUrl } = useUrl(`users/${id}`);
+      const { data: user, fetch: fetchUser } = useFetch(userApiUrl);
+      await fetchUser();
+      // Add mock subscores to each reviewer
+      reviewers.value.push({
+        ...user.value,
+        subscores: {}
+      });
     }
-  } catch (error) {
-    console.warn('Error fetching reviewers or subscores:', error);
-    alert('Backend is unavailable. Using mock data for reviewers.');
-    console.log('Using mock data for reviewers.');
-    reviewers.value = (submission.value?.reviewAssignments || []).map(assignment => ({
-      id: assignment.reviewerId,
-      name: `Reviewer ${assignment.reviewerId}`,
-      email: '',
-      subscores: {
-        Reputation: {
-          total: 200,
-          details: randomizeSubscores(
-            ["Academic Presence", "Educator Career", "Journalism", "Other", "Something"],
-            200
-          ),
-        },
-        Activity: {
-          total: 70,
-          details: randomizeSubscores(["Forum Posts", "Events Attended"], 70),
-        },
-        Verification: {
-          total: 90,
-          details: randomizeSubscores(["ID Verified", "Institutional Email"], 90),
-        },
-      },
-    }));
+
+    // console.log('Fetched reviewers data:', reviewers.value);
+
+    const reviewerIds = reviewers.value.map(reviewer => ({
+        id: reviewer.id,
+        name: reviewer.fullName || '', // Fallback if name is missing
+        email: reviewer.email || '', // Fallback if email is missing
+      }));
+
+    // console.log('Sending JSON for reviewers:', JSON.stringify({ role: 'reviewer', users: reviewerIds }));
+
+    if (reviewerIds.length > 0) {
+      const response = await fetch('http://localhost:8000/bulk-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: 'reviewer', users: reviewerIds }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      reviewers.value = data.users.map(user => ({
+        ...user,
+        subscores: user.subscores, // Use subscores from backend
+      }));
+    }
+
+    // console.log('Fetched reviewers:', reviewers);
+  } else {
+    console.warn('No review assignments found in submission data.');
   }
 };
 
@@ -210,13 +162,25 @@ function toggleReviewer(index) {
 // Update reactive values when requested data changes
 // submission --> publication --> authors
 // submission --> reviewerAssignments --> reviewers
-watch(submission, (newSubmission) => {
+watch(submission, async (newSubmission) => {
   if (newSubmission) {
-    fetchAuthors();
-    fetchReviewers();
+    try {
+      await fetchAuthors();
+      await fetchReviewers();
 
-    console.log('authors', authors);
-    console.log('reviewers', reviewers);
+      // Store data in sessionStorage after all requests succeed
+      const trustScoreData = {
+        authors: authors.value,
+        reviewers: reviewers.value,
+        submissionId: props.submissionId,
+        submissionTitle: submissionData.value.title || 'Untitled Submission',
+      };
+      sessionStorage.setItem('trustScoreData', JSON.stringify(trustScoreData));
+
+      console.log('Data stored in sessionStorage:', trustScoreData);
+    } catch (error) {
+      console.error('Error storing data in sessionStorage:', error);
+    }
   }
 });
 </script>
