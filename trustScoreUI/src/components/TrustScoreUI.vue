@@ -6,6 +6,14 @@ const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
 
+console.log(window);
+const apiUrl = window.pluginConfig.apiUrl;
+const jwtToken = window.pluginConfig.jwtToken;
+
+console.log('TrustScoreUI plugin initialized with API URL:', apiUrl);
+console.log('TrustScoreUI plugin initialized with JWT Token:', jwtToken);
+
+
 const cu = useCurrentUser();
 console.log('--- Current User Info ---');
 // console.log('ID:', cu?.getCurrentUserId());
@@ -76,25 +84,35 @@ const fetchAuthors = async () => {
     }));
 
     // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
+    const { apiUrl } = useUrl('trustScoreUI/fetch?verb=fetchTrustScore');
 
-
-    if (authorIds.length > 0) {
-      const response = await fetch('http://localhost:8000/bulk-verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: 'author', users: authorIds }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Backend error: ${response.statusText}`);
+    const { fetch, data } = useFetch(apiUrl, {
+      method: 'POST',
+      body: {
+        submissionId: currentSubmissionId,
       }
+    });
+    await fetch();
+    console.log('Fetched trust scores:', data.value);
 
-      const data = await response.json();
-      authors.value = data.users.map(user => ({
-        ...user,
-        subscores: user.subscores, // Use subscores from backend
-      }));
-    }
+
+    // if (authorIds.length > 0) {
+    //   const response = await fetch('http://localhost:8000/bulk-verify', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ role: 'author', users: authorIds }),
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error(`Backend error: ${response.statusText}`);
+    //   }
+
+    //   const data = await response.json();
+    //   authors.value = data.users.map(user => ({
+    //     ...user,
+    //     subscores: user.subscores, // Use subscores from backend
+    //   }));
+    // }
   } catch (error) {
     console.error('Error fetching authors or subscores:', error);
   }

@@ -14,6 +14,15 @@ const haveBackend = true // Assuming the backend is available as service
 if (haveBackend && isUserEditor) {
     pkp.registry.storeExtend('workflow', (piniaContext) => {
 	const store = piniaContext.store;
+    console.log(store);
+
+
+    // store.extender.extendFn('getApiUrl', () => {
+    //     return apiUrl;
+    // });
+    // store.extender.extendFn('getJwtToken', () => {
+    //     return jwtToken;
+    // });
 
 	store.extender.extendFn('getMenuItems', (items) => {
         items.push({
