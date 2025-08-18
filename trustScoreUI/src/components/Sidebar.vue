@@ -2,7 +2,7 @@
     <div class="component">
         <button class="details-btn" >↻ Reload</button>
         <button class="details-btn" @click="generatePDFReport">Get PDF report</button>
-        <button class="details-btn" >Get relation graph</button>
+        <!--<button class="details-btn" >Get relation graph</button>-->
     </div>
 </template>
 

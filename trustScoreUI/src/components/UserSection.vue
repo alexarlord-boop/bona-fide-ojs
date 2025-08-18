@@ -27,7 +27,7 @@
         <transition name="fade">
           <div v-if="accordionState[index]" class="user-details">
             <div class="details-btn">↻ Reload</div>
-            <div class="details-btn">Get PDF report</div>
+            <!--<div class="details-btn">Get PDF report</div>-->
             <div class="details-btn">Get relation graph</div>
             <div v-if="user.orcid">
               <strong>ORCID:</strong>

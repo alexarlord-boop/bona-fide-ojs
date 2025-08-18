@@ -17,13 +17,6 @@ if (haveBackend && isUserEditor) {
     console.log(store);
 
 
-    // store.extender.extendFn('getApiUrl', () => {
-    //     return apiUrl;
-    // });
-    // store.extender.extendFn('getJwtToken', () => {
-    //     return jwtToken;
-    // });
-
 	store.extender.extendFn('getMenuItems', (items) => {
         items.push({
             key: 'trustScoreTab',
@@ -75,48 +68,48 @@ if (haveBackend && isUserEditor) {
         return items;
 
     });
-    store.extender.extendFn('getPrimaryControlsRight', (items) => {
-        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
-            items.push({
-                key: 'trustScoreOverview',
-                label: 'Bona Fide Overview',
-                component: 'SampleComponent',
-                props: {
-                    submissionId: store.submissionId,
-                }
-            });
-        }
-        return items;
-
-    });
-    store.extender.extendFn('getActionItems', (items) => {
-        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
-            items.push({
-                key: 'trustScoreOverview',
-                label: 'Bona Fide Overview',
-                component: 'SampleComponent',
-                props: {
-                    submissionId: store.submissionId,
-                }
-            });
-        }
-        return items;
-
-    });
-    store.extender.extendFn('getSecondaryItems', (items) => {
-        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
-            items.push({
-                key: 'trustScoreOverview',
-                label: 'Bona Fide Overview',
-                component: 'SampleComponent',
-                props: {
-                    submissionId: store.submissionId,
-                }
-            });
-        }
-        return items;
-
-    });
+//    store.extender.extendFn('getPrimaryControlsRight', (items) => {
+//        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+//            items.push({
+//                key: 'trustScoreOverview',
+//                label: 'Bona Fide Overview',
+//                component: 'SampleComponent',
+//                props: {
+//                    submissionId: store.submissionId,
+//                }
+//            });
+//        }
+//        return items;
+//
+//    });
+//    store.extender.extendFn('getActionItems', (items) => {
+//        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+//            items.push({
+//                key: 'trustScoreOverview',
+//                label: 'Bona Fide Overview',
+//                component: 'SampleComponent',
+//                props: {
+//                    submissionId: store.submissionId,
+//                }
+//            });
+//        }
+//        return items;
+//
+//    });
+//    store.extender.extendFn('getSecondaryItems', (items) => {
+//        if (store.selectedMenuState.secondaryMenuItem === 'overview') {
+//            items.push({
+//                key: 'trustScoreOverview',
+//                label: 'Bona Fide Overview',
+//                component: 'SampleComponent',
+//                props: {
+//                    submissionId: store.submissionId,
+//                }
+//            });
+//        }
+//        return items;
+//
+//    });
 
 });
 } else {
