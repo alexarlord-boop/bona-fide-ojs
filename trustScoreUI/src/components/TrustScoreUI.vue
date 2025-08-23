@@ -5,8 +5,9 @@ const { useFetch } = pkp.modules.useFetch;
 const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
-import { DefaultApi } from '../../client/apis/';
+import generateJWT from '../utils/jwt.js';
 
+const secret = new TextEncoder().encode("a-string-secret-at-least-256-bits-long"); // must be at least 256 bits
 
 
 const cu = useCurrentUser();
@@ -61,111 +62,208 @@ const { apiUrl: submissionPublicationApiUrl } = useUrl(`submissions/${props.subm
 const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submissionPublicationApiUrl);
 
 // Fetch authors from the submission.publication
+//const fetchAuthors = async () => {
+//  try {
+//    await fetchSubmissionPublication();
+//    // console.log('Fetched publication data:', publication.value);
+//
+//    const authorIds = (publication.value?.authors || []).map(author => ({
+//      id: author.id,
+//      name: author.fullName,
+//      email: author.email,
+//
+//      // more details
+//      orcid: author.orcid || '',
+//      affiliations: author.affiliations || [],
+//
+//      score: 0,
+//    }));
+//
+//    // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
+//
+//    if (authorIds.length ===0) return;
+////       const serviceUrl = "http://localhost:8000/bulk-verify";
+//   const serviceUrl = "http://localhost:5000//verify-eduperson";
+//   const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXZlbl9uYW1lIjoiTWlow6FseSIsInN1cm5hbWUiOiJIw6lkZXIiLCJlbWFpbCI6Im1paGFseS5oZWRlckBzenRha2kuaHUiLCJsaW1pdF9yZXN1bHRzIjo1LCJ1bmNlcnRhaW5fbmFtZV9vcmRlciI6dHJ1ZSwidmVyaWZ5X2VtYWlsX2RvbWFpbiI6dHJ1ZSwiY2FsbGJhY2tfdXJsIjoiaHR0cHM6Ly93ZWJob29rLnNpdGUvYTk5NGIxMDEtMTdjNS00MTFiLTlmMmEtZmI2NjQxMGU0YzI5In0.taavK0mpbiYRWCnyB3nZP0Ra-SmfBmFAKuf2HKKp6ek';
+//   // 1. Submit verification job
+//    const response = await fetch(serviceUrl, {
+//      method: "GET",
+//      headers: {
+//        "Content-Type": "application/json",
+//        "Authorization": `Bearer ${jwt}`,
+//      },
+//    });
+//
+//    if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+//
+//    const { job_id, status } = await response.json();
+//
+//    if (status !== "RUNNING") {
+//      console.warn("Job did not start properly:", status);
+//      return;
+//    }
+//
+//    // 2. Poll status endpoint until job completes
+//    const pollUrl = `http://localhost:5000/status/${job_id}`;
+//
+//    let result = null;
+//    let attempts = 0;
+//    const maxAttempts = 50; // avoid infinite loop
+//
+//    while (attempts < maxAttempts) {
+//      console.log("polling", attempts);
+//      const pollRes = await fetch(pollUrl, {
+//        headers: { "Authorization": `Bearer ${jwt}` },
+//      });
+//
+//      if (!pollRes.ok) throw new Error(`Polling failed: ${pollRes.statusText}`);
+//      const pollData = await pollRes.json();
+//
+//      if (pollData.status === "FINISHED_SUCCESS") {
+//        result = pollData.result; // backend should include results here
+//        break;
+//      }
+//
+//      if (pollData.status === "FINISHED_ERROR") {
+//        throw new Error("Job failed on backend");
+//      }
+//
+//      if (pollData.status === "NOT_FOUND") {
+//        throw new Error("Job not found");
+//      }
+//
+//      // wait a bit before polling again
+//      await new Promise(resolve => setTimeout(resolve, 2000));
+//      attempts++;
+//    }
+//
+//    if (!result) {
+//      console.error("Job did not finish in time");
+//      return;
+//    }
+//
+//    // 3. Parse info
+//    const parsedData = result.researcher_info?.candidates?.map(c => {
+//      return {
+//        author: {
+//          given_name: c.author?.given_name || "",
+//          surname: c.author?.surname || "",
+//          orcid: c.author?.orcid || "",
+//          affiliations: c.author?.affiliations || [],
+//        },
+//        score_breakdown: c.score_breakdown?.author || {},
+//      };
+//    }) || [];
+//
+//    console.log("Parsed candidates and scores:", parsedData);
+//
+//    // 4. Store authors with scores
+////    authors.value = result.users.map(user => ({
+////      ...user,
+////      subscores: user.subscores,
+////    }));
+//
+//  } catch (error) {
+//    console.error('Error fetching authors or subscores:', error);
+//  }
+//};
 const fetchAuthors = async () => {
   try {
     await fetchSubmissionPublication();
-    // console.log('Fetched publication data:', publication.value);
 
     const authorIds = (publication.value?.authors || []).map(author => ({
       id: author.id,
       name: author.fullName,
       email: author.email,
-      
-      // more details
-      orcid: author.orcid || '',
+      orcid: author.orcid || "",
       affiliations: author.affiliations || [],
-
       score: 0,
     }));
 
-    // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
+    if (authorIds.length === 0) return;
 
-    if (authorIds.length ===0) return;
-//       const serviceUrl = "http://localhost:8000/bulk-verify";
-   const serviceUrl = "http://localhost:5000//verify-eduperson";
-   const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXZlbl9uYW1lIjoiTWlow6FseSIsInN1cm5hbWUiOiJIw6lkZXIiLCJlbWFpbCI6Im1paGFseS5oZWRlckBzenRha2kuaHUiLCJsaW1pdF9yZXN1bHRzIjo1LCJ1bmNlcnRhaW5fbmFtZV9vcmRlciI6dHJ1ZSwidmVyaWZ5X2VtYWlsX2RvbWFpbiI6dHJ1ZSwiY2FsbGJhY2tfdXJsIjoiaHR0cHM6Ly93ZWJob29rLnNpdGUvYTk5NGIxMDEtMTdjNS00MTFiLTlmMmEtZmI2NjQxMGU0YzI5In0.taavK0mpbiYRWCnyB3nZP0Ra-SmfBmFAKuf2HKKp6ek';
-   // 1. Submit verification job
-    const response = await fetch(serviceUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`,
-      },
+    const serviceUrl = "http://localhost:5000/verify-eduperson";
+
+    // Track jobs
+    const jobMap = {};
+
+    console.log("Authors from publication:", authorIds);
+
+    // Loop through authors
+for (const author of authorIds) {
+  const jwt = await generateJWT(author, secret);
+
+  const response = await fetch(serviceUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}`,
+    },
+  });
+
+  if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+
+  const { job_id, status } = await response.json();
+  jobMap[author.id] = { job_id, status, jwt };  // ✅ keep jwt here
+}
+
+console.log("Submitted jobs per author:", jobMap);
+
+// Poll each job
+const pollResults = {};
+for (const [authorId, { job_id, jwt }] of Object.entries(jobMap)) {
+  const pollUrl = `http://localhost:5000/status/${job_id}`;
+  let result = null;
+
+  for (let attempts = 0; attempts < 20; attempts++) {
+    console.log("Polling: ", attempts);
+    const res = await fetch(pollUrl, {
+      headers: { "Authorization": `Bearer ${jwt}` }, // ✅ reuse jwt
     });
 
-    if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+    const data = await res.json();
 
-    const { job_id, status } = await response.json();
-
-    if (status !== "RUNNING") {
-      console.warn("Job did not start properly:", status);
-      return;
+    if (data.status === "FINISHED_SUCCESS") {
+      result = data.result;
+      break;
+    } else if (data.status === "FINISHED_ERROR") {
+      throw new Error(`Job failed for author ${authorId}`);
+    } else if (data.status === "NOT_FOUND") {
+      throw new Error(`Job not found for author ${authorId}`);
     }
 
-    // 2. Poll status endpoint until job completes
-    const pollUrl = `http://localhost:5000/status/${job_id}`;
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
 
-    let result = null;
-    let attempts = 0;
-    const maxAttempts = 50; // avoid infinite loop
+  pollResults[authorId] = result;
+}
 
-    while (attempts < maxAttempts) {
-      console.log("polling", attempts);
-      const pollRes = await fetch(pollUrl, {
-        headers: { "Authorization": `Bearer ${jwt}` },
-      });
-
-      if (!pollRes.ok) throw new Error(`Polling failed: ${pollRes.statusText}`);
-      const pollData = await pollRes.json();
-
-      if (pollData.status === "FINISHED_SUCCESS") {
-        result = pollData.result; // backend should include results here
-        break;
-      }
-
-      if (pollData.status === "FINISHED_ERROR") {
-        throw new Error("Job failed on backend");
-      }
-
-      if (pollData.status === "NOT_FOUND") {
-        throw new Error("Job not found");
-      }
-
-      // wait a bit before polling again
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      attempts++;
-    }
-
-    if (!result) {
-      console.error("Job did not finish in time");
-      return;
-    }
-
-    // 3. Parse info
-    const parsedData = result.researcher_info?.candidates?.map(c => {
+    // ✅ Final parsed data
+    const parsedData = Object.entries(pollResults).map(([authorId, result]) => {
+      const candidates = result?.researcher_info?.candidates || [];
       return {
-        author: {
-          given_name: c.author?.given_name || "",
-          surname: c.author?.surname || "",
-          orcid: c.author?.orcid || "",
-          affiliations: c.author?.affiliations || [],
-        },
-        score_breakdown: c.score_breakdown?.author || {},
+        id: authorId,
+        OJS: authorIds.find(c => c.id.toString() === authorId),
+        candidates: candidates.map(c => ({
+          author: {
+            given_name: c.author?.given_name || "",
+            surname: c.author?.surname || "",
+            orcid: c.author?.orcid || "",
+            affiliations: c.author?.affiliations || [],
+          },
+          score_breakdown: c.score_breakdown?.author || {},
+        })),
       };
-    }) || [];
+    });
 
-    console.log("Parsed candidates and scores:", parsedData);
+    console.log("Parsed verification results:", parsedData);
+    authors.value = parsedData;
 
-    // 4. Store authors with scores
-//    authors.value = result.users.map(user => ({
-//      ...user,
-//      subscores: user.subscores,
-//    }));
-
-  } catch (error) {
-    console.error('Error fetching authors or subscores:', error);
+  } catch (err) {
+    console.error("Error verifying authors:", err);
   }
 };
+
 
 // Fetch reviewers users by ID from the submission.reviewAssignments
 const fetchReviewers = async () => {

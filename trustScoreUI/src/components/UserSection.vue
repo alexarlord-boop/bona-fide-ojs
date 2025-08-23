@@ -11,10 +11,10 @@
           <div class="user-info">
             
             <div class="user-contact">
-              <div><strong> {{ user.name }} </strong></div>
+              <div><strong> {{ user.OJS.name }} </strong></div>
               <div>
                 email: 
-                <a :href="'mailto:' + user.email">{{ user.email }}</a>
+                <a :href="'mailto:' + user.OJS.email">{{ user.OJS.email }}</a>
               </div>
             </div>
            
@@ -29,21 +29,23 @@
             <div class="details-btn">↻ Reload</div>
             <!--<div class="details-btn">Get PDF report</div>-->
             <div class="details-btn">Get relation graph</div>
-            <div v-if="user.orcid">
+            <div v-if="user.OJS.orcid">
               <strong>ORCID:</strong>
-              <a :href="user.orcid" target="_blank">{{ user.orcid }}</a>
+              <a :href="user.OJS.orcid" target="_blank">{{ user.OJS.orcid }}</a>
             </div>
   
             <br/>
       
-            <div v-if="user.subscores" class="subscores">
-              <ScoreBar :subscores="convertSubscoresToArray(user.subscores)" />
+            <div v-if="user.candidates" class="subscores">
+              <!--<ScoreBar :subscores="convertSubscoresToArray(user.OJS.subscores)" />-->
+              <pre>{{ JSON.stringify(user.candidates, null, 2) }}</pre>
             </div>
             
           </div>
         </transition>
       </div>
     </div>
+
   </template>
   
   <script setup>
