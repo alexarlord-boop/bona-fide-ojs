@@ -5,6 +5,8 @@ const { useFetch } = pkp.modules.useFetch;
 const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
+import { DefaultApi } from '../../client/apis/';
+
 
 
 const cu = useCurrentUser();
@@ -78,23 +80,88 @@ const fetchAuthors = async () => {
 
     // console.log('Sending JSON for authors:', JSON.stringify({ role: 'author', users: authorIds }));
 
-     if (authorIds.length > 0) {
-       const response = await fetch('http://localhost:8000/bulk-verify', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ role: 'author', users: authorIds }),
-       });
+    if (authorIds.length ===0) return;
+//       const serviceUrl = "http://localhost:8000/bulk-verify";
+   const serviceUrl = "http://localhost:5000//verify-eduperson";
+   const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXZlbl9uYW1lIjoiTWlow6FseSIsInN1cm5hbWUiOiJIw6lkZXIiLCJlbWFpbCI6Im1paGFseS5oZWRlckBzenRha2kuaHUiLCJsaW1pdF9yZXN1bHRzIjo1LCJ1bmNlcnRhaW5fbmFtZV9vcmRlciI6dHJ1ZSwidmVyaWZ5X2VtYWlsX2RvbWFpbiI6dHJ1ZSwiY2FsbGJhY2tfdXJsIjoiaHR0cHM6Ly93ZWJob29rLnNpdGUvYTk5NGIxMDEtMTdjNS00MTFiLTlmMmEtZmI2NjQxMGU0YzI5In0.taavK0mpbiYRWCnyB3nZP0Ra-SmfBmFAKuf2HKKp6ek';
+   // 1. Submit verification job
+    const response = await fetch(serviceUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwt}`,
+      },
+    });
 
-       if (!response.ok) {
-         throw new Error(`Backend error: ${response.statusText}`);
-       }
+    if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
 
-       const data = await response.json();
-       authors.value = data.users.map(user => ({
-         ...user,
-         subscores: user.subscores, // Use subscores from backend
-       }));
-     }
+    const { job_id, status } = await response.json();
+
+    if (status !== "RUNNING") {
+      console.warn("Job did not start properly:", status);
+      return;
+    }
+
+    // 2. Poll status endpoint until job completes
+    const pollUrl = `http://localhost:5000/status/${job_id}`;
+
+    let result = null;
+    let attempts = 0;
+    const maxAttempts = 50; // avoid infinite loop
+
+    while (attempts < maxAttempts) {
+      console.log("polling", attempts);
+      const pollRes = await fetch(pollUrl, {
+        headers: { "Authorization": `Bearer ${jwt}` },
+      });
+
+      if (!pollRes.ok) throw new Error(`Polling failed: ${pollRes.statusText}`);
+      const pollData = await pollRes.json();
+
+      if (pollData.status === "FINISHED_SUCCESS") {
+        result = pollData.result; // backend should include results here
+        break;
+      }
+
+      if (pollData.status === "FINISHED_ERROR") {
+        throw new Error("Job failed on backend");
+      }
+
+      if (pollData.status === "NOT_FOUND") {
+        throw new Error("Job not found");
+      }
+
+      // wait a bit before polling again
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      attempts++;
+    }
+
+    if (!result) {
+      console.error("Job did not finish in time");
+      return;
+    }
+
+    // 3. Parse info
+    const parsedData = result.researcher_info?.candidates?.map(c => {
+      return {
+        author: {
+          given_name: c.author?.given_name || "",
+          surname: c.author?.surname || "",
+          orcid: c.author?.orcid || "",
+          affiliations: c.author?.affiliations || [],
+        },
+        score_breakdown: c.score_breakdown?.author || {},
+      };
+    }) || [];
+
+    console.log("Parsed candidates and scores:", parsedData);
+
+    // 4. Store authors with scores
+//    authors.value = result.users.map(user => ({
+//      ...user,
+//      subscores: user.subscores,
+//    }));
+
   } catch (error) {
     console.error('Error fetching authors or subscores:', error);
   }
