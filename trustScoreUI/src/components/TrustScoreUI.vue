@@ -329,6 +329,12 @@ function toggleReviewer(index) {
 // submission --> reviewerAssignments --> reviewers
 watch(submission, async (newSubmission) => {
   if (newSubmission) {
+    const storedData = sessionStorage.getItem('trustScoreData');
+    if (storedData) {
+      authors.value = JSON.parse(storedData).authors;
+      console.log(JSON.parse(storedData).authors);
+      return;
+    }
     try {
       await fetchAuthors();
       await fetchReviewers();

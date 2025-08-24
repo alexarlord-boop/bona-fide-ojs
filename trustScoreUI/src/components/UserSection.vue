@@ -37,8 +37,43 @@
             <br/>
       
             <div v-if="user.candidates" class="subscores">
-              <!--<ScoreBar :subscores="convertSubscoresToArray(user.OJS.subscores)" />-->
-              <pre>{{ JSON.stringify(user.candidates, null, 2) }}</pre>
+              <div v-for="(cand, ci) in user.candidates" :key="ci" class="candidate-card">
+                <!-- Left: info -->
+                <div class="user-card info">
+                  <div><strong>{{ cand.author.given_name }} {{ cand.author.surname }}</strong></div>
+                  <div v-if="cand.author.orcid">
+                    ORCID:
+                    <a
+                      :href="`https://orcid.org/${cand.author.orcid}`"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ cand.author.orcid }}
+                    </a>
+                  </div>
+
+                  <div
+                    v-for="aff in cand.author?.affiliations || []"
+                    :key="aff.name"
+                    :title="aff.name"
+                  >
+                    <a
+                      :href="aff.ror || '#'"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Click to open ROR page"
+                      class="aff-link"
+                    >
+                    {{ aff.name }}
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Right: scores -->
+                <div class="user-card scores">
+                  <ScoreBar :subscores="convertScoreBreakdown(cand.score_breakdown, maxOverall)" />
+                </div>
+              </div>
             </div>
             
           </div>
@@ -49,14 +84,29 @@
   </template>
   
   <script setup>
+  import { computed } from "vue";
+
   import ScoreBar from './ScoreBar.vue';
-  defineProps({
+  const props = defineProps({
     title: String,
     users: Array,
     accordionState: Object
   });
   
   const emit = defineEmits(['toggle']);
+
+  const maxOverall = computed(() => {
+    let max = 0;
+    for (const user of props.users) {
+      if (!user.candidates) continue;
+      for (const cand of user.candidates) {
+        const val = cand.score_breakdown?.cumulative_rank ?? 0;
+        if (val > max) max = val;
+      }
+    }
+    return max;
+  });
+
 
   function convertSubscoresToArray(subscores) {
     const converted = {};
@@ -70,9 +120,100 @@
     }
     return converted;
   }
+
+
+  function convertScoreBreakdown(score, maxOverall) {
+    const subscores = {};
+
+
+
+     // Name (rank vs max_value)
+  if (score.name) {
+    subscores.name = {
+      total: score.name.max_value,
+      details: [
+        { label: (score.name.max_value === score.name.rank) ? "Perfect Match" : "Match" , value: score.name.rank }
+      ],
+    };
+  }
+
+    // Affiliations
+    if (score.affiliations) {
+      subscores.affiliations = {
+        total: score.affiliations.cumulative_rank,
+        details: [
+          { label: "Count", value: score.affiliations.count },
+          { label: "Avg Rank", value: score.affiliations.avg_rank_per_affiliation },
+        ],
+      };
+    }
+
+    // Emails
+    if (score.emails) {
+      subscores.emails = {
+        total: score.emails.cumulative_rank || score.emails.count,
+        details: [
+          { label: "Count", value: score.emails.count },
+          { label: "Cumulative", value: score.emails.cumulative_rank },
+          { label: "Perfect Match", value: score.emails.perfect_match },
+        ],
+      };
+    }
+
+    // Attributes overall
+    if (score.attributes_with_perfect_match !== undefined) {
+      subscores.attributes = {
+        total: score.attributes_with_perfect_match,
+        details: [
+          { label: "Attributes w/ perfect match", value: score.attributes_with_perfect_match },
+        ],
+      };
+    }
+
+    // Global score
+    if (score.cumulative_rank !== undefined) {
+      subscores.overall = {
+        total: maxOverall,
+        details: [
+          { label: "Cumulative Rank", value: score.cumulative_rank },
+          { label: "Difference", value: Math.round(maxOverall - score.cumulative_rank) },
+        ],
+      };
+    }
+
+    return subscores;
+  }
+
   </script>
   
   <style scoped>
+  .custom-select .aff-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* adjust as needed */
+  }
+  .candidate-card {
+    display: grid;
+    grid-template-columns: 500px 1fr; /* left fixed width, right flexible */
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+  }
+
+  .candidate-card .user-card.info {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    flex: 0 0 auto;
+  }
+
+  .candidate-card .user-card.scores {
+    background: transparent; /* or keep white */
+    box-shadow: none;
+    padding: 0;
+  }
   .user-section {
     background: white;
     padding: 1.2rem;
@@ -98,6 +239,10 @@
     margin-bottom: 0.75rem;
     background: #f9f9f9;
     overflow: hidden;
+  }
+
+  .user-card .tinted {
+    background: #d5f0fa ;
   }
   .user-summary {
     display: flex;
