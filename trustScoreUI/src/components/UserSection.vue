@@ -26,7 +26,10 @@
   
         <transition name="fade">
           <div v-if="accordionState[index]" class="user-details">
-            <div class="details-btn">↻ Reload</div>
+            <div class="details-btn" @click="emit('fetchAgainOne', user)">
+              <span v-if="props.loading">⏳ Loading...</span>
+              <span v-else>↻ Reload</span>
+            </div>
             <!--<div class="details-btn">Get PDF report</div>-->
             <div class="details-btn">Get relation graph</div>
             <div v-if="user.OJS.orcid">
@@ -90,10 +93,11 @@
   const props = defineProps({
     title: String,
     users: Array,
-    accordionState: Object
+    accordionState: Object,
+    loading: Boolean
   });
   
-  const emit = defineEmits(['toggle']);
+  const emit = defineEmits(['toggle', 'fetchAgainOne']);
 
   const maxOverall = computed(() => {
     let max = 0;

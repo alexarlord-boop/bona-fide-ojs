@@ -167,10 +167,114 @@ const { data: publication, fetch: fetchSubmissionPublication } = useFetch(submis
 //    console.error('Error fetching authors or subscores:', error);
 //  }
 //};
-const fetchAuthors = async () => {
-  try {
-    await fetchSubmissionPublication();
+const loadingAuthors = ref(false);
+const loadingSingleAuthor = ref(false);
 
+//const fetchAuthors = async () => {
+//  try {
+//    loadingAuthors.value = true;
+//    await fetchSubmissionPublication();
+//
+//    const authorIds = (publication.value?.authors || []).map(author => ({
+//      id: author.id,
+//      name: author.fullName,
+//      email: author.email,
+//      orcid: author.orcid || "",
+//      affiliations: author.affiliations || [],
+//      score: 0,
+//    }));
+//
+//    if (authorIds.length === 0) return;
+//
+//    const serviceUrl = "http://localhost:5000/verify-eduperson";
+//
+//    // Track jobs
+//    const jobMap = {};
+//
+//    console.log("Authors from publication:", authorIds);
+//
+//    // Loop through authors
+//for (const author of authorIds) {
+//  const jwt = await generateJWT(author, secret);
+//
+//  const response = await fetch(serviceUrl, {
+//    method: "GET",
+//    headers: {
+//      "Content-Type": "application/json",
+//      "Authorization": `Bearer ${jwt}`,
+//    },
+//  });
+//
+//  if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+//
+//  const { job_id, status } = await response.json();
+//  jobMap[author.id] = { job_id, status, jwt };  // ✅ keep jwt here
+//}
+//
+//console.log("Submitted jobs per author:", jobMap);
+//
+//// Poll each job
+//const pollResults = {};
+//for (const [authorId, { job_id, jwt }] of Object.entries(jobMap)) {
+//  const pollUrl = `http://localhost:5000/status/${job_id}`;
+//  let result = null;
+//
+//  for (let attempts = 0; attempts < 20; attempts++) {
+//    console.log("Polling: ", attempts);
+//    const res = await fetch(pollUrl, {
+//      headers: { "Authorization": `Bearer ${jwt}` }, // ✅ reuse jwt
+//    });
+//
+//    const data = await res.json();
+//
+//    if (data.status === "FINISHED_SUCCESS") {
+//      result = data.result;
+//      break;
+//    } else if (data.status === "FINISHED_ERROR") {
+//      throw new Error(`Job failed for author ${authorId}`);
+//    } else if (data.status === "NOT_FOUND") {
+//      throw new Error(`Job not found for author ${authorId}`);
+//    }
+//
+//    await new Promise(resolve => setTimeout(resolve, 2000));
+//  }
+//
+//  pollResults[authorId] = result;
+//}
+//
+//    // ✅ Final parsed data
+//    const parsedData = Object.entries(pollResults).map(([authorId, result]) => {
+//      const candidates = result?.researcher_info?.candidates || [];
+//      return {
+//        id: authorId,
+//        OJS: authorIds.find(c => c.id.toString() === authorId),
+//        candidates: candidates.map(c => ({
+//          author: {
+//            given_name: c.author?.given_name || "",
+//            surname: c.author?.surname || "",
+//            orcid: c.author?.orcid || "",
+//            affiliations: c.author?.affiliations || [],
+//          },
+//          score_breakdown: c.score_breakdown?.author || {},
+//        })),
+//      };
+//    });
+//
+//    console.log("Parsed verification results:", parsedData);
+//    authors.value = parsedData;
+//
+//  } catch (err) {
+//    console.error("Error verifying authors:", err);
+//  } finally {
+//    loadingAuthors.value = false;
+//  }
+//};
+
+const fetchAuthorsBulk = async () => {
+  try {
+    loadingAuthors.value = true;
+
+    await fetchSubmissionPublication();
     const authorIds = (publication.value?.authors || []).map(author => ({
       id: author.id,
       name: author.fullName,
@@ -182,88 +286,88 @@ const fetchAuthors = async () => {
 
     if (authorIds.length === 0) return;
 
-    const serviceUrl = "http://localhost:5000/verify-eduperson";
+    const results = await Promise.all(
+      authorIds.map(author => fetchAuthorById(author))
+    );
 
-    // Track jobs
-    const jobMap = {};
-
-    console.log("Authors from publication:", authorIds);
-
-    // Loop through authors
-for (const author of authorIds) {
-  const jwt = await generateJWT(author, secret);
-
-  const response = await fetch(serviceUrl, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${jwt}`,
-    },
-  });
-
-  if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
-
-  const { job_id, status } = await response.json();
-  jobMap[author.id] = { job_id, status, jwt };  // ✅ keep jwt here
-}
-
-console.log("Submitted jobs per author:", jobMap);
-
-// Poll each job
-const pollResults = {};
-for (const [authorId, { job_id, jwt }] of Object.entries(jobMap)) {
-  const pollUrl = `http://localhost:5000/status/${job_id}`;
-  let result = null;
-
-  for (let attempts = 0; attempts < 20; attempts++) {
-    console.log("Polling: ", attempts);
-    const res = await fetch(pollUrl, {
-      headers: { "Authorization": `Bearer ${jwt}` }, // ✅ reuse jwt
-    });
-
-    const data = await res.json();
-
-    if (data.status === "FINISHED_SUCCESS") {
-      result = data.result;
-      break;
-    } else if (data.status === "FINISHED_ERROR") {
-      throw new Error(`Job failed for author ${authorId}`);
-    } else if (data.status === "NOT_FOUND") {
-      throw new Error(`Job not found for author ${authorId}`);
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
-
-  pollResults[authorId] = result;
-}
-
-    // ✅ Final parsed data
-    const parsedData = Object.entries(pollResults).map(([authorId, result]) => {
-      const candidates = result?.researcher_info?.candidates || [];
-      return {
-        id: authorId,
-        OJS: authorIds.find(c => c.id.toString() === authorId),
-        candidates: candidates.map(c => ({
-          author: {
-            given_name: c.author?.given_name || "",
-            surname: c.author?.surname || "",
-            orcid: c.author?.orcid || "",
-            affiliations: c.author?.affiliations || [],
-          },
-          score_breakdown: c.score_breakdown?.author || {},
-        })),
-      };
-    });
-
-    console.log("Parsed verification results:", parsedData);
-    authors.value = parsedData;
-
+    authors.value = results;
   } catch (err) {
-    console.error("Error verifying authors:", err);
+    console.error("Error fetching authors:", err);
+  } finally {
+    loadingAuthors.value = false;
   }
 };
 
+
+const fetchAuthorById = async (author) => {
+  try {
+    loadingSingleAuthor.value = true;
+    const serviceUrl = "http://localhost:5000/verify-eduperson";
+    const jwt = await generateJWT(author, secret);
+
+    // 1. Start job
+    const response = await fetch(serviceUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwt}`,
+      },
+    });
+
+    if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
+    const { job_id } = await response.json();
+
+    // 2. Poll
+    const pollUrl = `http://localhost:5000/status/${job_id}`;
+    let result = null;
+
+    for (let attempts = 0; attempts < 20; attempts++) {
+      const res = await fetch(pollUrl, {
+        headers: { "Authorization": `Bearer ${jwt}` },
+      });
+
+      const data = await res.json();
+      if (data.status === "FINISHED_SUCCESS") {
+        result = data.result;
+        break;
+      } else if (data.status === "FINISHED_ERROR") {
+        throw new Error("Job failed");
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    // 3. Parse result
+    const candidates = result?.researcher_info?.candidates || [];
+    return {
+      id: author.id,
+      OJS: author,
+      candidates: candidates.map(c => ({
+        author: {
+          given_name: c.author?.given_name || "",
+          surname: c.author?.surname || "",
+          orcid: c.author?.orcid || "",
+          affiliations: c.author?.affiliations || [],
+        },
+        score_breakdown: c.score_breakdown?.author || {},
+      })),
+    };
+  } catch (err) {
+    console.error(`Error fetching author ${author.id}:`, err);
+    return { id: author.id, OJS: author, candidates: [] };
+  } finally {
+    loadingSingleAuthor.value = false;
+  }
+};
+
+const reloadSingleAuthor = async (author) => {
+  const updated = await fetchAuthorById(author.OJS || author);
+  // заменить в authors.value по id
+  const idx = authors.value.findIndex(a => a.id === updated.id);
+  if (idx !== -1) {
+    authors.value[idx] = updated;
+  }
+};
 
 // Fetch reviewers users by ID from the submission.reviewAssignments
 const fetchReviewers = async () => {
@@ -329,6 +433,7 @@ function toggleReviewer(index) {
 // submission --> reviewerAssignments --> reviewers
 watch(submission, async (newSubmission) => {
   if (newSubmission) {
+    // storage caching to omit data fetch on page reload
     const storedData = sessionStorage.getItem('trustScoreData');
     if (storedData) {
       authors.value = JSON.parse(storedData).authors;
@@ -358,7 +463,7 @@ watch(submission, async (newSubmission) => {
 
 <template>
   <div class="">
-    <UserSection v-if="isUserEditor" title="Authors" :users="authors" :accordionState="authorAccordion" @toggle="toggleAuthor" />
+    <UserSection v-if="isUserEditor" title="Authors" :users="authors" :loading="loadingSingleAuthor" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="reloadSingleAuthor"/>
     <UserSection v-if="isUserEditor" title="Reviewers" :users="reviewers" :accordionState="reviewerAccordion" @toggle="toggleReviewer" />
   </div>
 </template>
