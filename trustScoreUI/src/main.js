@@ -62,6 +62,7 @@ if (haveBackend && isUserEditor) {
                 component: 'Sidebar',
                 props: {
                     submissionId: store.submissionId,
+                    submission: store.submission,
                 }
             });
         }

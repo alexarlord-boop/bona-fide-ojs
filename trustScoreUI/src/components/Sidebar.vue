@@ -1,6 +1,9 @@
 <template>
     <div class="component">
-        <button class="details-btn" >↻ Reload</button>
+        <div class="details-btn" @click="fetchAll">
+            <span v-if="loading">⏳ Loading...</span>
+            <span v-else>↻ Reload All</span>
+          </div>
         <button class="details-btn" @click="generatePDFReport">Get PDF report</button>
         <!--<button class="details-btn" >Get relation graph</button>-->
     </div>
@@ -8,6 +11,26 @@
 
 <script setup>
 import { generatePDF } from "../utils/pdfGenerator";
+
+import { useAuthors } from './useAuthors';
+import { useReviewers } from "./useReviewers.js";
+import {computed} from "vue";
+
+const props = defineProps({
+    submissionId: Number,
+    submission: Object
+  });
+
+
+const { fetchAuthorsBulk, loadingAuthors } = useAuthors(props.submissionId);
+const { fetchReviewersBulk, loadingReviewers } = useReviewers(props.submission);
+
+const loading = computed(() => loadingAuthors.value || loadingReviewers.value);
+
+function fetchAll() {
+    fetchAuthorsBulk();
+    fetchReviewersBulk();
+}
 
 function generatePDFReport() {
     const cachedData = sessionStorage.getItem('trustScoreData');

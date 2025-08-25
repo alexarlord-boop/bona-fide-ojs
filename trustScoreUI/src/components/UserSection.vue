@@ -2,7 +2,7 @@
     <div class="user-section">
       <h2>{{ title }}</h2>
   
-      <div v-if="users.length === 0" class="empty">
+      <div v-if="users?.length === 0" class="empty">
         No {{ title.toLowerCase() }} found.
       </div>
   
@@ -11,7 +11,7 @@
           <div class="user-info">
             
             <div class="user-contact">
-              <div><strong> {{ user.OJS.name }} </strong></div>
+              <div><strong> {{ user?.OJS?.name }} </strong></div>
               <div>
                 email: 
                 <a :href="'mailto:' + user.OJS.email">{{ user.OJS.email }}</a>
@@ -26,15 +26,17 @@
   
         <transition name="fade">
           <div v-if="accordionState[index]" class="user-details">
-            <div class="details-btn" @click="emit('fetchAgainOne', user)">
-              <span v-if="props.loading">⏳ Loading...</span>
-              <span v-else>↻ Reload</span>
-            </div>
-            <!--<div class="details-btn">Get PDF report</div>-->
-            <div class="details-btn">Get relation graph</div>
-            <div v-if="user.OJS.orcid">
-              <strong>ORCID:</strong>
-              <a :href="user.OJS.orcid" target="_blank">{{ user.OJS.orcid }}</a>
+            <div class="details-section">
+              <div class="details-btn" @click="emit('fetchAgainOne', user, userType)">
+                <span v-if="props.loading">⏳ Loading...</span>
+                <span v-else>↻ Reload</span>
+              </div>
+              <!--<div class="details-btn">Get PDF report</div>-->
+              <div class="details-btn">Get relation graph</div>
+              <div v-if="user.OJS.orcid">
+                <strong>ORCID:</strong>
+                <a :href="user.OJS.orcid" target="_blank">{{ user.OJS.orcid }}</a>
+              </div>
             </div>
   
             <br/>
@@ -43,20 +45,20 @@
               <div v-for="(cand, ci) in user.candidates" :key="ci" class="candidate-card">
                 <!-- Left: info -->
                 <div class="user-card info">
-                  <div><strong>{{ cand.author.given_name }} {{ cand.author.surname }}</strong></div>
-                  <div v-if="cand.author.orcid">
+                  <div><strong>{{ cand?.user?.given_name }} {{ cand?.user?.surname }}</strong></div>
+                  <div v-if="cand?.user?.orcid">
                     ORCID:
                     <a
-                      :href="`https://orcid.org/${cand.author.orcid}`"
+                      :href="`https://orcid.org/${cand.user.orcid}`"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {{ cand.author.orcid }}
+                      {{ cand.user.orcid }}
                     </a>
                   </div>
 
                   <div
-                    v-for="aff in cand.author?.affiliations || []"
+                    v-for="aff in cand.user?.affiliations || []"
                     :key="aff.name"
                     :title="aff.name"
                   >
@@ -92,6 +94,7 @@
   import ScoreBar from './ScoreBar.vue';
   const props = defineProps({
     title: String,
+    userType: String,
     users: Array,
     accordionState: Object,
     loading: Boolean
@@ -271,6 +274,13 @@
   .toggle-btn:hover {
     background: #125ea2;
   }
+/*  .details-section {*/
+/*    background: rgba(255);*/
+/*    height: 30px;*/
+/*    z-index: 100;*/
+/*    position: sticky;*/
+/*    top: 0;*/
+/*  }*/
   .details-btn {
     max-width: 125px;
     margin-right: 10px;
@@ -290,7 +300,9 @@
   }
 
   .user-details {
-    padding: 0.8rem 1rem;
+/*    max-height: 400px;*/
+/*    overflow-y: auto;*/
+    padding: 0 1rem;
     background: white;
     font-size: 0.88rem;
     line-height: 1.35;
