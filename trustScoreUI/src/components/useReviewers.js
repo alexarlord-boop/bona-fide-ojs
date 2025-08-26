@@ -14,10 +14,9 @@ export function useReviewers(submission) {
     const fetchReviewersBulk = async () => {
       try {
         loadingReviewers.value = true;
-        console.log(submission.reviewAssignments);
-        if (submission && submission.reviewAssignments) {
-          console.log("fetchReviewersBulk triggered");
-          const ids = submission.reviewAssignments.map(assignment => assignment.reviewerId);
+        console.log(submission.value.reviewAssignments);
+        if (submission && submission.value.reviewAssignments) {
+          const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
           for (const id of ids) {
             // Fetch user by ID
             const { apiUrl: userApiUrl } = useUrl(`users/${id}`);

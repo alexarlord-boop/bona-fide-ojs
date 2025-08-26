@@ -14,7 +14,7 @@
               <div><strong> {{ user?.OJS?.name }} </strong></div>
               <div>
                 email: 
-                <a :href="'mailto:' + user.OJS.email">{{ user.OJS.email }}</a>
+                <a :href="'mailto:' + user?.OJS?.email">{{ user?.OJS?.email }}</a>
               </div>
             </div>
            
@@ -33,9 +33,9 @@
               </div>
               <!--<div class="details-btn">Get PDF report</div>-->
               <div class="details-btn">Get relation graph</div>
-              <div v-if="user.OJS.orcid">
+              <div v-if="user?.OJS?.orcid">
                 <strong>ORCID:</strong>
-                <a :href="user.OJS.orcid" target="_blank">{{ user.OJS.orcid }}</a>
+                <a :href="user?.OJS?.orcid" target="_blank">{{ user?.OJS?.orcid }}</a>
               </div>
             </div>
   

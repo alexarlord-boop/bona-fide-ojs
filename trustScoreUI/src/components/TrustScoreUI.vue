@@ -53,24 +53,24 @@ const { reviewers, fetchReviewersBulk, loadingReviewers } = useReviewers(submiss
 import { useStorage } from "./useStorage.js";
 const { getStorage, updateStorage } = useStorage();
 
-const reloadSingleUser = async (user, userType) => {
+const reloadSingleAuthor = async (user) => {
   const updated = await fetchUserById(user.OJS || user);
 
-  let arrayToChange = null;
-  switch (userType) {
-    case 'author':
-      arrayToChange = authors;
-      break;
-    case 'reviewer':
-      arrayToChange = reviewers;
-      break;
-  }
-
-  const idx = arrayToChange.value.findIndex(a => a.id === updated.id);
+  const idx = authors.value.findIndex(a => a.id === updated.id);
   if (idx !== -1) {
-    arrayToChange.value[idx] = updated;
+    authors.value[idx] = updated;
   }
-  console.log(`Updated: ${userType}`, updated);
+  console.log(`Updated: author`, updated);
+};
+
+const reloadSingleReviewer = async (user) => {
+  const updated = await fetchUserById(user.OJS || user);
+
+  const idx = reviewers.value.findIndex(a => a.id === updated.id);
+  if (idx !== -1) {
+    reviewers.value[idx] = updated;
+  }
+  console.log(`Updated: reviewer`, updated);
 };
 
 
@@ -92,40 +92,54 @@ watch(submission, async (newSubmission) => {
     try {
       const parsed = getStorage('trustScoreData');
 
-      if (parsed?.authors && parsed?.authors?.length !== 0) {
-        authors.value = parsed?.authors;
+      // If both authors and reviewers are cached, just load them
+      if (parsed?.authors?.length && parsed?.reviewers?.length) {
+        authors.value = parsed.authors;
+        reviewers.value = parsed.reviewers;
       } else {
-        await fetchAuthorsBulk();
-      }
+        // Build promises depending on what's missing
+        const promises = [];
+        if (!parsed?.authors?.length) {
+          promises.push(fetchAuthorsBulk());
+        } else {
+          authors.value = parsed.authors;
+        }
 
-      if (parsed?.reviewers && parsed?.reviewers?.length !== 0) {
-        reviewers.value = parsed?.reviewers;
-      } else {
-        await fetchReviewersBulk();
+        if (!parsed?.reviewers?.length) {
+          promises.push(fetchReviewersBulk());
+        } else {
+          reviewers.value = parsed.reviewers;
+        }
+
+        // Run them in parallel
+        await Promise.all(promises);
       }
 
       // Store data in sessionStorage after all requests succeed
-      const trustScoreData = {
-        authors: authors.value,
-        reviewers: reviewers.value,
-        submissionId: props.submissionId,
-        submissionTitle: submissionData.value.title || 'Untitled Submission',
-      };
-      if (authors.value?.length !== 0 && reviewers.value?.length !== 0) {
+      console.log('authors', authors.value);
+      console.log('reviewers', reviewers.value);
+      if (authors.value?.length && reviewers.value?.length) {
+        const trustScoreData = {
+          authors: authors.value,
+          reviewers: reviewers.value,
+          submissionId: props.submissionId,
+          submissionTitle: submissionData.value.title || 'Untitled Submission',
+        };
         updateStorage('trustScoreData', trustScoreData);
+        console.log(trustScoreData);
       }
-
-
     } catch (error) {
       console.error('Error storing data in sessionStorage:', error);
     }
+
   }
 });
 </script>
 
+<!--TODO:- single author, single reviewer hooks that use scoring hook: we need to separate loading states per user-->
 <template>
   <div class="">
-    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user, userType) => reloadSingleUser(user, userType)"/>
-    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user, userType) => reloadSingleUser(user, userType)"/>
+    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user, userType) => reloadSingleAuthor(user)"/>
+    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user, userType) => reloadSingleReviewer(user)"/>
   </div>
 </template>
