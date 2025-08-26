@@ -5,12 +5,17 @@ import generateJWT from '../utils/jwt.js';
 const secret = new TextEncoder().encode("a-string-secret-at-least-256-bits-long"); // must be at least 256 bits
 
 export function useScoring() {
-  const loadingScores = ref(false);
+//  const loadingScores = ref(false);
+  const loadingScores = ref({});
 
-    async function fetchUserById(user) {
+    async function fetchUserById(user, userType) {
         console.log("Fetching single user: ", user);
+        const rawId = user.id;
+        const newUserId = rawId?.toString().startsWith(`${userType}-`)
+          ? rawId
+          : `${userType}-${rawId}`;
           try {
-            loadingScores.value = true;
+            loadingScores.value[newUserId] = true;
             const serviceUrl = "http://localhost:5000/verify-eduperson";
             const jwt = await generateJWT(user, secret);
 
@@ -30,7 +35,7 @@ export function useScoring() {
             const pollUrl = `http://localhost:5000/status/${job_id}`;
             let result = null;
 
-            for (let attempts = 0; attempts < 20; attempts++) {
+            for (let attempts = 0; attempts < 40; attempts++) {
               const res = await fetch(pollUrl, {
                 headers: { "Authorization": `Bearer ${jwt}` },
               });
@@ -50,6 +55,7 @@ export function useScoring() {
             const candidates = result?.researcher_info?.candidates || [];
             return {
               id: user.id,
+              stringId: newUserId,
               OJS: user,
               candidates: candidates.map(c => ({
                 user: {
@@ -64,10 +70,10 @@ export function useScoring() {
 
 
           } catch (err) {
-            console.error(`Error fetching user ${user.id}:`, err);
-            return { id: user.id, OJS: user, candidates: [] };
+            console.error(`Error fetching user ${user.id}:${newUserId}`, err);
+            return { ...user, candidates: [] };
           } finally {
-            loadingScores.value = false;
+            loadingScores.value[newUserId] = false;
           }
         }
 

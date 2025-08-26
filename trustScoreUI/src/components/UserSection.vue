@@ -27,8 +27,8 @@
         <transition name="fade">
           <div v-if="accordionState[index]" class="user-details">
             <div class="details-section">
-              <div class="details-btn" @click="emit('fetchAgainOne', user, userType)">
-                <span v-if="props.loading">⏳ Loading...</span>
+              <div class="details-btn" @click="emit('fetchAgainOne', user)">
+                <span v-if="props.loading[user.stringId]">⏳ Loading...</span>
                 <span v-else>↻ Reload</span>
               </div>
               <!--<div class="details-btn">Get PDF report</div>-->

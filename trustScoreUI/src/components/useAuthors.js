@@ -34,7 +34,7 @@ export function useAuthors(submissionId) {
           if (authorIds.length === 0) return;
 
           const results = await Promise.all(
-            authorIds.map(author => fetchUserById(author))
+            authorIds.map(author => fetchUserById(author, 'author'))
           );
 
           authors.value = results;

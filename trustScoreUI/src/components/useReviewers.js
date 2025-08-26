@@ -15,7 +15,7 @@ export function useReviewers(submission) {
       try {
         loadingReviewers.value = true;
         console.log(submission.value.reviewAssignments);
-        if (submission && submission.value.reviewAssignments) {
+        if (submission.value && submission.value.reviewAssignments) {
           const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
           for (const id of ids) {
             // Fetch user by ID
@@ -43,7 +43,7 @@ export function useReviewers(submission) {
           if (reviewerIds.length === 0) return;
 
           const results = await Promise.all(
-            reviewerIds.map(reviewer => fetchUserById(reviewer))
+            reviewerIds.map(reviewer => fetchUserById(reviewer, 'reviewer'))
           );
 
           reviewers.value = results;

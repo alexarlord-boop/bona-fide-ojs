@@ -54,17 +54,20 @@ import { useStorage } from "./useStorage.js";
 const { getStorage, updateStorage } = useStorage();
 
 const reloadSingleAuthor = async (user) => {
-  const updated = await fetchUserById(user.OJS || user);
+  const updated = await fetchUserById( user, 'author');
 
   const idx = authors.value.findIndex(a => a.id === updated.id);
   if (idx !== -1) {
-    authors.value[idx] = updated;
+    authors.value[idx] = {
+    ...authors.value[idx],
+    candidates: updated.candidates,  // only update candidates
+  };
   }
   console.log(`Updated: author`, updated);
 };
 
 const reloadSingleReviewer = async (user) => {
-  const updated = await fetchUserById(user.OJS || user);
+  const updated = await fetchUserById( user, 'reviewer');
 
   const idx = reviewers.value.findIndex(a => a.id === updated.id);
   if (idx !== -1) {
@@ -139,7 +142,7 @@ watch(submission, async (newSubmission) => {
 <!--TODO:- single author, single reviewer hooks that use scoring hook: we need to separate loading states per user-->
 <template>
   <div class="">
-    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user, userType) => reloadSingleAuthor(user)"/>
-    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user, userType) => reloadSingleReviewer(user)"/>
+    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
+    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
   </div>
 </template>
