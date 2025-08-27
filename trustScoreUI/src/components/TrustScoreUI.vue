@@ -142,16 +142,6 @@ watch(submission, async (newSubmission) => {
 
   }
 });
-//
-//watch(
-//  () => submission.value?.reviewAssignments,
-//  async (assignments) => {
-//    if (!assignments?.length) return;
-//    console.log("Review assignments ready:", assignments);
-//    await fetchReviewersBulk();
-//  },
-//  { immediate: false }
-//);
 </script>
 
 <template>
