@@ -14,16 +14,18 @@ import { generatePDF } from "../utils/pdfGenerator";
 
 import { useAuthors } from './useAuthors';
 import { useReviewers } from "./useReviewers.js";
-import {computed} from "vue";
+import {computed, toRef} from "vue";
 
 const props = defineProps({
     submissionId: Number,
     submission: Object
   });
 
+const submissionValue = toRef(props, "submission");
+console.log('props in sidebar: ', submissionValue);
 
 const { fetchAuthorsBulk, loadingAuthors } = useAuthors(props.submissionId);
-const { fetchReviewersBulk, loadingReviewers } = useReviewers(props.submission);
+const { fetchReviewersBulk, loadingReviewers } = useReviewers(submissionValue);
 
 const loading = computed(() => loadingAuthors.value || loadingReviewers.value);
 

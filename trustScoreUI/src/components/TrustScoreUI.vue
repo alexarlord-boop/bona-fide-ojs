@@ -71,7 +71,10 @@ const reloadSingleReviewer = async (user) => {
 
   const idx = reviewers.value.findIndex(a => a.id === updated.id);
   if (idx !== -1) {
-    reviewers.value[idx] = updated;
+    reviewers.value[idx] = {
+    ...reviewers.value[idx],
+    candidates: updated.candidates,  // only update candidates
+  };
   }
   console.log(`Updated: reviewer`, updated);
 };
@@ -90,6 +93,8 @@ function toggleReviewer(index) {
 // submission --> publication --> authors
 // submission --> reviewerAssignments --> reviewers
 watch(submission, async (newSubmission) => {
+  if (!newSubmission) return; // still no submission data
+  if (!newSubmission.reviewAssignments) return; // still no necessary field
   if (newSubmission) {
 
     try {
@@ -137,12 +142,21 @@ watch(submission, async (newSubmission) => {
 
   }
 });
+//
+//watch(
+//  () => submission.value?.reviewAssignments,
+//  async (assignments) => {
+//    if (!assignments?.length) return;
+//    console.log("Review assignments ready:", assignments);
+//    await fetchReviewersBulk();
+//  },
+//  { immediate: false }
+//);
 </script>
 
-<!--TODO:- single author, single reviewer hooks that use scoring hook: we need to separate loading states per user-->
 <template>
   <div class="">
-    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
-    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
+    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
+    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
   </div>
 </template>

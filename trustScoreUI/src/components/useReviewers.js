@@ -12,11 +12,18 @@ export function useReviewers(submission) {
 
     // Fetch reviewers users by ID from the submission.reviewAssignments
     const fetchReviewersBulk = async () => {
+      console.log('Submission in fetchReviewersBulk: ', submission);
+      if (!submission.value || !submission.value.reviewAssignments) {
+        console.warn("fetchReviewersBulk: submission or reviewAssignments not ready");
+        return [];
+      }
+
       try {
         loadingReviewers.value = true;
-        console.log(submission.value.reviewAssignments);
-        if (submission.value && submission.value.reviewAssignments) {
-          const ids = submission.value.reviewAssignments.map(assignment => assignment.reviewerId);
+        const rAss = submission.value.reviewAssignments || submission.reviewAssignments;
+        console.log(rAss);
+        if (submission.value && rAss) {
+          const ids = rAss.map(assignment => assignment.reviewerId);
           for (const id of ids) {
             // Fetch user by ID
             const { apiUrl: userApiUrl } = useUrl(`users/${id}`);

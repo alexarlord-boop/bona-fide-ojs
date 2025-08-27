@@ -1,88 +1,98 @@
 <template>
     <div class="user-section">
       <h2>{{ title }}</h2>
-  
-      <div v-if="users?.length === 0" class="empty">
-        No {{ title.toLowerCase() }} found.
+
+      <!-- Bulk loader -->
+      <div v-if="bulkLoading" class="flex justify-center p-4">
+        <span class="loader">Loading {{ title }}...</span>
       </div>
   
-      <div v-for="(user, index) in users" :key="user.id" class="user-card">
-        <div class="user-summary">
-          <div class="user-info">
-            
-            <div class="user-contact">
-              <div><strong> {{ user?.OJS?.name }} </strong></div>
-              <div>
-                email: 
-                <a :href="'mailto:' + user?.OJS?.email">{{ user?.OJS?.email }}</a>
-              </div>
-            </div>
-           
-          </div>
-          <button @click="emit('toggle', index)" class="toggle-btn">
-            {{ accordionState[index] ? 'Hide Details' : 'Show Details' }}
-          </button>
+
+
+       <!-- Users list -->
+      <div v-else>
+        <div v-if="users?.length === 0" class="empty">
+          No {{ title.toLowerCase() }} found.
         </div>
   
-        <transition name="fade">
-          <div v-if="accordionState[index]" class="user-details">
-            <div class="details-section">
-              <div class="details-btn" @click="emit('fetchAgainOne', user)">
-                <span v-if="props.loading[user.stringId]">⏳ Loading...</span>
-                <span v-else>↻ Reload</span>
-              </div>
-              <!--<div class="details-btn">Get PDF report</div>-->
-              <div class="details-btn">Get relation graph</div>
-              <div v-if="user?.OJS?.orcid">
-                <strong>ORCID:</strong>
-                <a :href="user?.OJS?.orcid" target="_blank">{{ user?.OJS?.orcid }}</a>
-              </div>
-            </div>
-  
-            <br/>
-      
-            <div v-if="user.candidates" class="subscores">
-              <div v-for="(cand, ci) in user.candidates" :key="ci" class="candidate-card">
-                <!-- Left: info -->
-                <div class="user-card info">
-                  <div><strong>{{ cand?.user?.given_name }} {{ cand?.user?.surname }}</strong></div>
-                  <div v-if="cand?.user?.orcid">
-                    ORCID:
-                    <a
-                      :href="`https://orcid.org/${cand.user.orcid}`"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {{ cand.user.orcid }}
-                    </a>
-                  </div>
+        <div v-for="(user, index) in users" :key="user.id" class="user-card">
+          <div class="user-summary">
+            <div class="user-info">
 
-                  <div
-                    v-for="aff in cand.user?.affiliations || []"
-                    :key="aff.name"
-                    :title="aff.name"
-                  >
-                    <a
-                      :href="aff.ror || '#'"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Click to open ROR page"
-                      class="aff-link"
-                    >
-                    {{ aff.name }}
-                    </a>
-                  </div>
-                </div>
-
-                <!-- Right: scores -->
-                <div class="user-card scores">
-                  <ScoreBar :subscores="convertScoreBreakdown(cand.score_breakdown, maxOverall)" />
+              <div class="user-contact">
+                <div><strong> {{ user?.OJS?.name }} </strong></div>
+                <div>
+                  email:
+                  <a :href="'mailto:' + user?.OJS?.email">{{ user?.OJS?.email }}</a>
                 </div>
               </div>
+
             </div>
-            
+            <button @click="emit('toggle', index)" class="toggle-btn">
+              {{ accordionState[index] ? 'Hide Details' : 'Show Details' }}
+            </button>
           </div>
-        </transition>
+
+          <transition name="fade">
+            <div v-if="accordionState[index]" class="user-details">
+              <div class="details-section">
+                <div class="details-btn" @click="emit('fetchAgainOne', user)">
+                  <span v-if="props.loading[user.stringId]">⏳ Loading...</span>
+                  <span v-else>↻ Reload</span>
+                </div>
+                <!--<div class="details-btn">Get PDF report</div>-->
+                <div class="details-btn">Get relation graph</div>
+                <div v-if="user?.OJS?.orcid">
+                  <strong>ORCID:</strong>
+                  <a :href="user?.OJS?.orcid" target="_blank">{{ user?.OJS?.orcid }}</a>
+                </div>
+              </div>
+
+              <br/>
+
+              <div v-if="user.candidates" class="subscores">
+                <div v-for="(cand, ci) in user.candidates" :key="ci" class="candidate-card">
+                  <!-- Left: info -->
+                  <div class="user-card info">
+                    <div><strong>{{ cand?.user?.given_name }} {{ cand?.user?.surname }}</strong></div>
+                    <div v-if="cand?.user?.orcid">
+                      ORCID:
+                      <a
+                        :href="`https://orcid.org/${cand.user.orcid}`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ cand.user.orcid }}
+                      </a>
+                    </div>
+
+                    <div
+                      v-for="aff in cand.user?.affiliations || []"
+                      :key="aff.name"
+                      :title="aff.name"
+                    >
+                      <a
+                        :href="aff.ror || '#'"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Click to open ROR page"
+                        class="aff-link"
+                      >
+                      {{ aff.name }}
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Right: scores -->
+                  <div class="user-card scores">
+                    <ScoreBar :subscores="convertScoreBreakdown(cand.score_breakdown, maxOverall)" />
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </transition>
+        </div>
       </div>
     </div>
 
@@ -97,7 +107,8 @@
     userType: String,
     users: Array,
     accordionState: Object,
-    loading: Boolean
+    loading: Object,
+    bulkLoading: Boolean,
   });
   
   const emit = defineEmits(['toggle', 'fetchAgainOne']);
