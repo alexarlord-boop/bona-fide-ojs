@@ -75,7 +75,7 @@ input[type="range"] {
 }
 
 .clearBtn {
-  background-color: #e53935; /* красный */
+  background-color: #e53935;
   color: white;
   padding: 8px 14px;
   border: none;
@@ -87,10 +87,10 @@ input[type="range"] {
 }
 
 .clearBtn:hover {
-  background-color: #c62828; /* темнее при наведении */
+  background-color: #c62828;
 }
 
 .clearBtn:active {
-  transform: scale(0.95); /* эффект нажатия */
+  transform: scale(0.95);
 }
 </style>
