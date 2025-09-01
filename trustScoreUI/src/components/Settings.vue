@@ -21,6 +21,18 @@
       @input="saveTime"
     />
     <span class="ml-2">{{ timeLimit }} sec</span>
+
+    <br/>
+    <br/>
+    <br/>
+    <div class="mt-6">
+      <button
+        @click="clearStorage"
+        class="clearBtn"
+      >
+        Clear cache
+      </button>
+    </div>
   </div>
 </template>
 
@@ -28,9 +40,10 @@
 import { ref, onMounted } from "vue";
 import { useStorage } from "./useStorage.js";
 
-const { getStorage, updateStorage } = useStorage("local");
+const { getStorage, updateStorage, clearAll } = useStorage("local");
 
 const timeLimit = ref(10); // default
+const baseUrl = ref("");
 
 onMounted(() => {
   const savedUrl = getStorage("baseUrl");
@@ -48,10 +61,36 @@ function saveTime() {
   updateStorage("timeLimit", timeLimit.value);
 }
 
+function clearStorage() {
+  clearAll();
+  baseUrl.value = "";
+  timeLimit.value = 10;
+}
+
 </script>
 
 <style scoped>
 input[type="range"] {
   width: 200px;
+}
+
+.clearBtn {
+  background-color: #e53935; /* красный */
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.1s ease;
+}
+
+.clearBtn:hover {
+  background-color: #c62828; /* темнее при наведении */
+}
+
+.clearBtn:active {
+  transform: scale(0.95); /* эффект нажатия */
 }
 </style>

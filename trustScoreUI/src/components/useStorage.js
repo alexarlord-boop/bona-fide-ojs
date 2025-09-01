@@ -25,10 +25,16 @@ export function useStorage(type = "session") {
         storage.clear();
     }
 
+    function clearAll() {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+    }
+
     return {
         getStorage,
         updateStorage,
         removeStorage,
         clearStorage,
+        clearAll,
     };
 }
