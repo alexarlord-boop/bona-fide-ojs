@@ -1,10 +1,12 @@
 import TrustScoreUI from "./components/TrustScoreUI.vue";
 import Sidebar from "./components/Sidebar.vue";
 import SampleComponent from "./components/SampleComponent.vue";
+import Settings from "./components/Settings.vue";
 
 pkp.registry.registerComponent('TrustScoreUI', TrustScoreUI);
 pkp.registry.registerComponent('Sidebar', Sidebar);
 pkp.registry.registerComponent('SampleComponent', SampleComponent);
+pkp.registry.registerComponent('Settings', Settings);
 
 const { useCurrentUser } = pkp.modules.useCurrentUser;
 const cu = useCurrentUser();
@@ -18,34 +20,58 @@ if (haveBackend && isUserEditor) {
 
 
 	store.extender.extendFn('getMenuItems', (items) => {
-        items.push({
-            key: 'trustScoreTab',
-            label: 'Bona Fide',
-            component: 'TrustScoreUI',
-            title: 'Bona Fide',
-            icon: 'AnonymousReview',
-            items: [
-                {
-                    key: 'overview',
-                    label: 'Overview',
-                    state: {
-                        primaryMenuItem: 'trustScoreTab',
-                        secondaryMenuItem: 'overview',
-                        title: 'Bona Fide: Overview'
+        items.push(
+
+            {
+                key: 'trustScoreTab',
+                label: 'Bona Fide',
+                title: 'Bona Fide',
+                icon: 'AnonymousReview',
+                items: [
+                    // Scores tab
+                    {
+                        key: 'overview',
+                        label: 'Overview',
+                        state: {
+                            primaryMenuItem: 'trustScoreTab',
+                            secondaryMenuItem: 'overview',
+                            title: 'Bona Fide: Overview'
+                        }
+                    },
+                    // Settings tab
+                    {
+                        key: 'settings',
+                        label: 'Settings',
+                        state: {
+                            primaryMenuItem: 'trustScoreTab',
+                            secondaryMenuItem: 'settings',
+                            title: 'Bona Fide: Settings'
+                        }
                     }
-                }
-            ]
-        });
+                ]
+            },
+
+        );
         return items;
     });
 
     store.extender.extendFn('getPrimaryItems', (items) => {
 
+        // Scores tab injection
         if (store.selectedMenuState.secondaryMenuItem === 'overview') {
-            const trustScoresData = window.trustScoresData || window.pkp?.state?.trustScores || store.state?.trustScores || {};
             items.push({
                 key: 'overview',
                 component: 'TrustScoreUI',
+                props: {
+                    submissionId: store.submissionId,
+                }
+            });
+        }
+        // Settings tab injection
+        if (store.selectedMenuState.secondaryMenuItem === 'settings') {
+            items.push({
+                key: 'settings',
+                component: 'Settings',
                 props: {
                     submissionId: store.submissionId,
                 }

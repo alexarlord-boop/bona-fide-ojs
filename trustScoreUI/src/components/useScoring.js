@@ -1,12 +1,20 @@
 
 import { ref } from 'vue';
 import generateJWT from '../utils/jwt.js';
+import {useStorage} from "./useStorage.js";
 
 const secret = new TextEncoder().encode("a-string-secret-at-least-256-bits-long"); // must be at least 256 bits
 
 export function useScoring() {
 //  const loadingScores = ref(false);
   const loadingScores = ref({});
+  const { getStorage } = useStorage("local"); // или "session"
+  const timeLimit = ref(10);
+  const savedTimeLimit = getStorage("timeLimit");
+  if (savedTimeLimit) {
+    timeLimit.value = Number(savedTimeLimit);
+    console.log("Saved time limit",savedTimeLimit);
+  }
 
     async function fetchUserById(user, userType) {
         console.log("Fetching single user: ", user);
@@ -35,7 +43,7 @@ export function useScoring() {
             const pollUrl = `http://localhost:5000/status/${job_id}`;
             let result = null;
 
-            for (let attempts = 0; attempts < 40; attempts++) {
+            for (let attempts = 0; attempts < timeLimit.value; attempts++) {
               const res = await fetch(pollUrl, {
                 headers: { "Authorization": `Bearer ${jwt}` },
               });
@@ -48,7 +56,7 @@ export function useScoring() {
                 throw new Error("Job failed");
               }
 
-              await new Promise(resolve => setTimeout(resolve, 2000));
+              await new Promise(resolve => setTimeout(resolve, 1000));
             }
 
             // 3. Parse result
