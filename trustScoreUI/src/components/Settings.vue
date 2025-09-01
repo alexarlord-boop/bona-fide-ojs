@@ -77,7 +77,7 @@ input[type="range"] {
 .clearBtn {
   background-color: #e53935;
   color: white;
-  padding: 8px 14px;
+  padding: 3px;
   border: none;
   border-radius: 8px;
   font-size: 14px;
