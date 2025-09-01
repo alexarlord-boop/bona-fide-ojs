@@ -9,11 +9,19 @@ export function useScoring() {
 //  const loadingScores = ref(false);
   const loadingScores = ref({});
   const { getStorage } = useStorage("local"); // или "session"
+
   const timeLimit = ref(10);
   const savedTimeLimit = getStorage("timeLimit");
   if (savedTimeLimit) {
     timeLimit.value = Number(savedTimeLimit);
     console.log("Saved time limit",savedTimeLimit);
+  }
+
+  const backendBaseUrl = ref('http://localhost:5000');
+  const savedBaseUrl = getStorage("baseUrl");
+  if (savedBaseUrl) {
+    backendBaseUrl.value = savedBaseUrl;
+    console.log("Saved  base url", savedBaseUrl);
   }
 
     async function fetchUserById(user, userType) {
@@ -24,7 +32,7 @@ export function useScoring() {
           : `${userType}-${rawId}`;
           try {
             loadingScores.value[newUserId] = true;
-            const serviceUrl = "http://localhost:5000/verify-eduperson";
+            const serviceUrl = `${backendBaseUrl.value}/verify-eduperson`;
             const jwt = await generateJWT(user, secret);
 
             // 1. Start job
@@ -40,7 +48,7 @@ export function useScoring() {
             const { job_id } = await response.json();
 
             // 2. Poll
-            const pollUrl = `http://localhost:5000/status/${job_id}`;
+            const pollUrl = `${backendBaseUrl.value}/status/${job_id}`;
             let result = null;
 
             for (let attempts = 0; attempts < timeLimit.value; attempts++) {

@@ -1,4 +1,6 @@
 import * as jose from "jose";
+
+// TODO:- better to have this jwt functionality on the backend side
 export default async function generateJWT(user, secret) {
   console.log(user)
     const payload = {
