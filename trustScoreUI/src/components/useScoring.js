@@ -44,8 +44,10 @@ export function useScoring() {
               },
             });
 
-            if (!response.ok) throw new Error(`Backend error: ${response.statusText}`);
-            const { job_id } = await response.json();
+            // backend sends an array of actors (new bulk feature endpoint)
+            const job = await response.json();
+            const job_id = job[0].job_id;
+            console.log(job_id);
 
             // 2. Poll
             const pollUrl = `${backendBaseUrl.value}/status/${job_id}`;
@@ -57,6 +59,7 @@ export function useScoring() {
               });
 
               const data = await res.json();
+              console.log(typeof data);
               if (data.status === "FINISHED_SUCCESS") {
                 result = data.result;
                 break;
