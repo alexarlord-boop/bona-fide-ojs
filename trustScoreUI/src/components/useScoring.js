@@ -52,7 +52,9 @@ export function useScoring() {
             const pollUrl = `${backendBaseUrl.value}/status/${job_id}`;
             let result = null;
 
-            for (let attempts = 0; attempts < timeLimit.value; attempts++) {
+            const secondsPerPollAttempt = 2
+            const twoSecondsPeriodNumber = timeLimit.value / secondsPerPollAttempt
+            for (let attempts = 0; attempts < twoSecondsPeriodNumber; attempts++) {
               const res = await fetch(pollUrl, {
                 headers: { "Authorization": `Bearer ${jwt}` },
               });
@@ -63,9 +65,11 @@ export function useScoring() {
                 break;
               } else if (data.status === "FINISHED_ERROR") {
                 throw new Error("Job failed");
+              } else if (attempts === twoSecondsPeriodNumber && data.status === "RUNNING") {
+                throw new Error("Can't fetch all data, please increase the polling time limit.");
               }
 
-              await new Promise(resolve => setTimeout(resolve, 1000));
+              await new Promise(resolve => setTimeout(resolve, secondsPerPollAttempt * 1000));
             }
 
             // 3. Parse result
