@@ -89,7 +89,7 @@
 
                   <!-- Right: scores -->
                   <div class="">
-                    <ScoreBar :subscores="convertScoreBreakdown(cand.score_breakdown, maxOverall)" />
+                    <ScoreBar :subscores="convertBaseScoreBreakdown(cand.score_breakdown, maxOverall)" />
                   </div>
                 </div>
               </div>
@@ -104,7 +104,7 @@
   
   <script setup>
   import { computed } from "vue";
-  import convertRorScoreToBreakdown from '../utils/scoresToBarConverter.js';
+  import {convertRorScoreToBreakdown, convertBaseScoreBreakdown} from '../utils/scoresToBarConverter.js';
 
   import ScoreBar from './ScoreBar.vue';
   const props = defineProps({
@@ -145,67 +145,6 @@
   }
 
 
-  function convertScoreBreakdown(score, maxOverall) {
-    const subscores = {};
-
-
-
-     // Name (rank vs max_value)
-  if (score.name) {
-    subscores.name = {
-      total: score.name.max_value,
-      details: [
-        { label: (score.name.max_value === score.name.rank) ? "Perfect Match" : "Match" , value: score.name.rank }
-      ],
-    };
-  }
-
-    // Affiliations
-    if (score.affiliations) {
-      subscores.affiliations = {
-        total: score.affiliations.cumulative_rank,
-        details: [
-          { label: "Count", value: score.affiliations.count },
-          { label: "Avg Rank", value: score.affiliations.avg_rank_per_affiliation },
-        ],
-      };
-    }
-
-    // Emails
-    if (score.emails) {
-      subscores.emails = {
-        total: score.emails.cumulative_rank || score.emails.count,
-        details: [
-          { label: "Count", value: score.emails.count },
-          { label: "Cumulative", value: score.emails.cumulative_rank },
-          { label: "Perfect Match", value: score.emails.perfect_match },
-        ],
-      };
-    }
-
-    // Attributes overall
-    if (score.attributes_with_perfect_match !== undefined) {
-      subscores.attributes = {
-        total: score.attributes_with_perfect_match,
-        details: [
-          { label: "Attributes w/ perfect match", value: score.attributes_with_perfect_match },
-        ],
-      };
-    }
-
-    // Global score
-    if (score.cumulative_rank !== undefined) {
-      subscores.overall = {
-        total: maxOverall,
-        details: [
-          { label: "Cumulative Rank", value: score.cumulative_rank },
-          { label: "Difference", value: Math.round(maxOverall - score.cumulative_rank) },
-        ],
-      };
-    }
-
-    return subscores;
-  }
 
   </script>
   

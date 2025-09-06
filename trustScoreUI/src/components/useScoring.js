@@ -58,7 +58,6 @@ export function useScoring() {
               });
 
               const data = await res.json();
-
               if (data.status === "FINISHED_SUCCESS") {
                 result = data.result;
                 break;
@@ -71,7 +70,6 @@ export function useScoring() {
 
             // 3. Parse result
             const ror_scored_results = result?.email_domain_verification?.ror_scored_results || [];
-            console.log("ror_scored_results: ", ror_scored_results);
             const candidates = result?.researcher_info?.candidates || [];
             return {
               id: user.id,
