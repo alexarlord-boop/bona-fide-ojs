@@ -50,6 +50,10 @@
 
               <br/>
 
+              <div v-if="user?.ror_scored_results && user.ror_scored_results.length > 0 && user.ror_scored_results[0][1]" class="">
+                <ScoreBar :subscores="convertRorScoreToBreakdown(user.ror_scored_results[0][1])" />
+              </div>
+
               <div v-if="user.candidates" class="subscores">
                 <div v-for="(cand, ci) in user.candidates" :key="ci" class="candidate-card">
                   <!-- Left: info -->
@@ -84,7 +88,7 @@
                   </div>
 
                   <!-- Right: scores -->
-                  <div class="user-card scores">
+                  <div class="">
                     <ScoreBar :subscores="convertScoreBreakdown(cand.score_breakdown, maxOverall)" />
                   </div>
                 </div>
@@ -100,6 +104,7 @@
   
   <script setup>
   import { computed } from "vue";
+  import convertRorScoreToBreakdown from '../utils/scoresToBarConverter.js';
 
   import ScoreBar from './ScoreBar.vue';
   const props = defineProps({

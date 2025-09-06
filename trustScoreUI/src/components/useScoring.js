@@ -47,7 +47,6 @@ export function useScoring() {
             // backend sends an array of actors (new bulk feature endpoint)
             const job = await response.json();
             const job_id = job[0].job_id;
-            console.log(job_id);
 
             // 2. Poll
             const pollUrl = `${backendBaseUrl.value}/status/${job_id}`;
@@ -59,7 +58,7 @@ export function useScoring() {
               });
 
               const data = await res.json();
-              console.log(typeof data);
+
               if (data.status === "FINISHED_SUCCESS") {
                 result = data.result;
                 break;
@@ -71,11 +70,14 @@ export function useScoring() {
             }
 
             // 3. Parse result
+            const ror_scored_results = result?.email_domain_verification?.ror_scored_results || [];
+            console.log("ror_scored_results: ", ror_scored_results);
             const candidates = result?.researcher_info?.candidates || [];
             return {
               id: user.id,
               stringId: newUserId,
               OJS: user,
+              ror_scored_results: ror_scored_results,
               candidates: candidates.map(c => ({
                 user: {
                   given_name: c.author?.given_name || "",
@@ -90,7 +92,7 @@ export function useScoring() {
 
           } catch (err) {
             console.error(`Error fetching user ${user.id}:${newUserId}`, err);
-            return { ...user, candidates: [] };
+            return { ...user, ror_scored_results: [], candidates: [] };
           } finally {
             loadingScores.value[newUserId] = false;
           }
