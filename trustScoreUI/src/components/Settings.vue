@@ -15,8 +15,8 @@
     <input
       type="range"
       min="1"
-      max="60"
-      step="1"
+      max="300"
+      step="60"
       v-model="timeLimit"
       @input="saveTime"
     />
@@ -42,7 +42,7 @@ import { useStorage } from "./useStorage.js";
 
 const { getStorage, updateStorage, clearAll } = useStorage("local");
 
-const timeLimit = ref(10); // default
+const timeLimit = ref(1); // default
 const baseUrl = ref("");
 
 onMounted(() => {
@@ -64,7 +64,7 @@ function saveTime() {
 function clearStorage() {
   clearAll();
   baseUrl.value = "";
-  timeLimit.value = 10;
+  timeLimit.value = 1;
 }
 
 </script>
