@@ -155,6 +155,38 @@ watch(submission, async (newSubmission) => {
 
   }
 });
+
+// --- NEW: Load JSON file into storage and reactive state ---
+const fileInput = ref(null);
+
+function loadJsonFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // Save to storage
+      updateStorage('trustScoreData', data);
+      console.log('Loaded JSON into storage:', data);
+
+      // Apply immediately to reactive vars
+      if (data.authors) authors.value = data.authors;
+      if (data.reviewers) reviewers.value = data.reviewers;
+
+      // Reset accordions so UI is consistent
+      authorAccordion.value = {};
+      reviewerAccordion.value = {};
+
+    } catch (err) {
+      console.error('Error parsing JSON:', err);
+      alert('Invalid JSON file.');
+    }
+  };
+  reader.readAsText(file);
+}
 </script>
 
 <template>
@@ -162,4 +194,28 @@ watch(submission, async (newSubmission) => {
     <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
     <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
   </div>
+  <!-- JSON upload button -->
+  <div class="mt-4">
+    <label class="uploadBtn">
+      Load JSON Report
+      <input type="file" accept=".json" @change="loadJsonFromFile" style="display:none"/>
+    </label>
+  </div>
+
 </template>
+
+<style scoped>
+.uploadBtn {
+  background-color: #1976d2;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.25s ease;
+}
+.uploadBtn:hover {
+  background-color: #1565c0;
+}
+</style>
