@@ -60,6 +60,7 @@ const reloadSingleAuthor = async (user) => {
   if (idx !== -1) {
     authors.value[idx] = {
     ...authors.value[idx],
+    error: updated.error,
     candidates: updated.candidates,  // only update candidates
   };
   }
@@ -73,11 +74,23 @@ const reloadSingleReviewer = async (user) => {
   if (idx !== -1) {
     reviewers.value[idx] = {
     ...reviewers.value[idx],
+    error: updated.error,
     candidates: updated.candidates,  // only update candidates
   };
   }
   console.log(`Updated: reviewer`, updated);
 };
+
+watch([authors, reviewers], () => {
+  if (authors.value?.length && reviewers.value?.length) {
+    updateStorage('trustScoreData', {
+      authors: authors.value,
+      reviewers: reviewers.value,
+      submissionId: props.submissionId,
+      submissionTitle: submissionData.value.title || 'Untitled Submission',
+    });
+  }
+}, { deep: true });
 
 
 // Toggle accordion functions

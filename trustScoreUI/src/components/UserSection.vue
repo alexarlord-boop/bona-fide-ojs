@@ -20,10 +20,11 @@
             <div class="user-info">
 
               <div class="user-contact">
-                <div><strong> {{ user?.OJS?.name }} </strong></div>
+                <div><strong> {{ user?.ojsName }} </strong></div>
+                <span v-if="typeof user.error === 'string'" class="error-msg">⚠ {{ user.error }}</span>
                 <div>
                   email:
-                  <a :href="'mailto:' + user?.OJS?.email">{{ user?.OJS?.email }}</a>
+                  <a :href="'mailto:' + user?.ojsEmail">{{ user?.ojsEmail }}</a>
                 </div>
               </div>
 
@@ -42,9 +43,9 @@
                 </div>
                 <!--<div class="details-btn">Get PDF report</div>-->
                 <div class="details-btn">Get relation graph</div>
-                <div v-if="user?.OJS?.orcid">
+                <div v-if="user?.ojsORCID">
                   <strong>ORCID:</strong>
-                  <a :href="user?.OJS?.orcid" target="_blank">{{ user?.OJS?.orcid }}</a>
+                  <a :href="user?.ojsORCID" target="_blank">{{ user?.ojsORCID }}</a>
                 </div>
               </div>
 
@@ -296,6 +297,12 @@
     line-height: 16px;
     font-size: 0.78rem;
     transition: width 0.3s ease;
+  }
+
+  .error-msg {
+    color: #d32f2f;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
   }
 /* .fade-enter-active,
 .fade-leave-active {

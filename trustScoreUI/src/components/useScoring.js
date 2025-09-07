@@ -73,14 +73,20 @@ export function useScoring() {
             }
 
             // 3. Parse result
-            const ror_scored_results = result?.email_domain_verification?.ror_scored_results || [];
-            const candidates = result?.researcher_info?.candidates || [];
+            const new_ror_scored_results = result?.email_domain_verification?.ror_scored_results || [];
+            const new_candidates = result?.researcher_info?.candidates || [];
+            const hasResults = new_ror_scored_results.length > 0 || new_candidates.length > 0;
+
+            console.log("User error field:", hasResults ? null : "No results returned from backend");
+
             return {
               id: user.id,
               stringId: newUserId,
-              OJS: user,
-              ror_scored_results: ror_scored_results,
-              candidates: candidates.map(c => ({
+              ojsName: user.name || user.ojsName,
+              ojsEmail: user.email || user.ojsEmail,
+              ojsORCID: user.orcid || user.ojsORCID,
+              ror_scored_results: hasResults ? new_ror_scored_results : user?.ror_scored_results || [],
+              candidates: hasResults ? new_candidates.map(c => ({
                 user: {
                   given_name: c.author?.given_name || "",
                   surname: c.author?.surname || "",
@@ -88,22 +94,33 @@ export function useScoring() {
                   affiliations: c.author?.affiliations || [],
                 },
                 score_breakdown: c.score_breakdown?.author || {},
-              })),
+              })) : user?.candidates || [],
+              error: hasResults ? null : "No new results returned from backend", // per-user error
+
             };
 
 
           } catch (err) {
             console.error(`Error fetching user ${user.id}:${newUserId}`, err);
-            return { ...user, ror_scored_results: [], candidates: [] };
+            return {
+              id: user.id,
+              stringId: newUserId,
+              ojsName: user.name || user.ojsName,
+              ojsEmail: user.email || user.ojsEmail,
+              ojsORCID: user.orcid || user.ojsORCID,
+              ror_scored_results: user.ror_scored_results || [],
+              candidates: user.candidates || [],
+              error: err.message || user.error || "Unknown error",
+            };
           } finally {
             loadingScores.value[newUserId] = false;
           }
         }
 
 
-        return {
-          fetchUserById,
-          loadingScores
-        };
+  return {
+    fetchUserById,
+    loadingScores
+  };
 
 }
