@@ -4,7 +4,8 @@
             <span v-if="loading">⏳ Loading...</span>
             <span v-else>↻ Reload All</span>
           </div>
-        <button class="details-btn" @click="generatePDFReport">Get PDF report</button>
+        <!--<button class="details-btn" @click="generatePDFReport">Get PDF report</button>-->
+        <button class="details-btn" @click="getCachedTrustScoreData">Get JSON Data</button>
         <!--<button class="details-btn" >Get relation graph</button>-->
     </div>
 </template>
@@ -43,6 +44,36 @@ function generatePDFReport() {
 
     const data = JSON.parse(cachedData);
     generatePDF(data);
+}
+
+function getCachedTrustScoreData(pretty=true) {
+    const cachedData = sessionStorage.getItem('trustScoreData');
+    if (!cachedData) {
+      console.error('No cached data found.');
+      return;
+    }
+
+    let jsonString;
+    try {
+      const parsed = JSON.parse(cachedData);
+      jsonString = pretty
+        ? JSON.stringify(parsed, null, 2) // 2 пробела для форматирования
+        : cachedData;
+    } catch (e) {
+      console.error('Error parsing JSON from cache:', e);
+      jsonString = cachedData; // fallback
+    }
+
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'trustScoreData.json';
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 </script>
 
