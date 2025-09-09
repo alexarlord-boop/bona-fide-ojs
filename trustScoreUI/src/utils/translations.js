@@ -2,19 +2,22 @@ import en from '../translations/en.json';
 import es from '../translations/es.json';
 import fr from '../translations/fr.json';
 import de from '../translations/de.json';
+import zh from '../translations/zh.json';
 
 export const translations = {
   en,
   es,
   fr,
-  de
+  de,
+  zh,
 };
 
 export const availableLocales = [
   { code: 'en', name: 'English' },
   { code: 'es', name: 'Español' },
   { code: 'fr', name: 'Français' },
-  { code: 'de', name: 'Deutsch' }
+  { code: 'de', name: 'Deutsch' },
+  { code: 'zh', name: 'Simplified Mandarin Chinese' }
 ];
 
 export function getTranslation(locale, key) {
