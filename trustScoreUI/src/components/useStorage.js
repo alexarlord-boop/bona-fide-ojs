@@ -1,5 +1,4 @@
 export function useStorage(type = "session") {
-    // Определяем хранилище по выбору
     const storage =
         type === "local" ? window.localStorage : window.sessionStorage;
 
