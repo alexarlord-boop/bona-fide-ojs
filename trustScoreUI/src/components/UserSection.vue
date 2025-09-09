@@ -30,7 +30,7 @@
 
             </div>
             <button @click="emit('toggle', index)" class="toggle-btn">
-              {{ accordionState[index] ? 'Hide Details' : 'Show Details' }}
+              {{ accordionState[index] ? t('ui.labels.hide_details') : t('ui.labels.show_details') }}
             </button>
           </div>
 
@@ -38,13 +38,13 @@
             <div v-if="accordionState[index]" class="user-details">
               <div v-if="!forReports" class="details-section">
                 <div class="details-btn" @click="emit('fetchAgainOne', user)">
-                  <span v-if="props.loading[user.stringId]">⏳ Loading...</span>
-                  <span v-else>↻ Reload</span>
+                  <span v-if="props.loading[user.stringId]">⏳ {{ t('ui.labels.loading') }}</span>
+                  <span v-else>↻ {{ t('ui.labels.reload') }}</span>
                 </div>
                 <!--<div class="details-btn">Get PDF report</div>-->
-                <div class="details-btn">Get relation graph</div>
+                <div class="details-btn">{{ t('ui.labels.get_relation_graph') }}</div>
                 <div v-if="user?.ojsORCID">
-                  <strong>ORCID:</strong>
+                  <strong>{{ t('ui.labels.orcid') }}:</strong>
                   <a :href="user?.ojsORCID" target="_blank">{{ user?.ojsORCID }}</a>
                 </div>
               </div>
@@ -61,7 +61,7 @@
                   <div class="user-card info">
                     <div><strong>{{ cand?.user?.given_name }} {{ cand?.user?.surname }}</strong></div>
                     <div v-if="cand?.user?.orcid">
-                      ORCID:
+                      {{ t('ui.labels.orcid') }}:
                       <a
                         :href="`https://orcid.org/${cand.user.orcid}`"
                         target="_blank"
@@ -80,7 +80,7 @@
                         :href="aff.ror || '#'"
                         target="_blank"
                         rel="noopener noreferrer"
-                        title="Click to open ROR page"
+                        :title="t('ui.labels.click_to_open_ror')"
                         class="aff-link"
                       >
                       {{ aff.name }}
@@ -110,7 +110,7 @@
 
   import ScoreBar from './ScoreBar.vue';
   
-  const { getScoreLabel } = useLocale();
+  const { getScoreLabel, t } = useLocale();
   
   const props = defineProps({
     forReports: Boolean,

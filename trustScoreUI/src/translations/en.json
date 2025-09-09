@@ -24,5 +24,39 @@
       "cumulative_rank": "Cumulative Rank",
       "difference": "Difference"
     }
+  },
+  "ui": {
+    "labels": {
+      "name": "Name",
+      "attributes": "Attributes",
+      "affiliations": "Affiliations",
+      "emails": "Emails",
+      "overall": "Overall",
+      "domain": "Domain",
+      "orcid": "ORCID",
+      "loading": "Loading...",
+      "reload": "Reload",
+      "get_relation_graph": "Get relation graph",
+      "click_to_open_ror": "Click to open ROR page",
+      "authors": "Authors",
+      "reviewers": "Reviewers",
+      "loading_authors": "Loading Authors...",
+      "get_json_data": "Get JSON Data",
+      "reload_all": "Reload All",
+      "show_details": "Show Details",
+      "hide_details": "Hide Details"
+    },
+    "tabs": {
+      "authors_and_reviewers": "Authors and Reviewers",
+      "report_preview": "Report Preview",
+      "settings": "Settings",
+      "bona_fide": "Bona Fide"
+    },
+    "settings": {
+      "backend_base_url": "Backend Base URL",
+      "time_limit_polling": "Time limit for backend polling",
+      "language": "Language",
+      "clear_cache": "Clear cache"
+    }
   }
 }

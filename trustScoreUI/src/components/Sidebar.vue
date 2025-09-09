@@ -1,17 +1,18 @@
 <template>
     <div class="component">
         <div class="details-btn" @click="fetchAll">
-            <span v-if="loading">⏳ Loading...</span>
-            <span v-else>↻ Reload All</span>
+            <span v-if="loading">⏳ {{ t('ui.labels.loading_authors') }}</span>
+            <span v-else>↻ {{ t('ui.labels.reload_all') }}</span>
           </div>
         <!--<button class="details-btn" @click="generatePDFReport">Get PDF report</button>-->
-        <button class="details-btn" @click="getCachedTrustScoreData">Get JSON Data</button>
+        <button class="details-btn" @click="getCachedTrustScoreData">{{ t('ui.labels.get_json_data') }}</button>
         <!--<button class="details-btn" >Get relation graph</button>-->
     </div>
 </template>
 
 <script setup>
 import { generatePDF } from "../utils/pdfGenerator";
+import { useLocale } from "../composables/useLocale.js";
 
 import { useAuthors } from './useAuthors';
 import { useReviewers } from "./useReviewers.js";
@@ -29,6 +30,8 @@ const { fetchAuthorsBulk, loadingAuthors } = useAuthors(props.submissionId);
 const { fetchReviewersBulk, loadingReviewers } = useReviewers(submissionValue);
 import { useStorage } from "./useStorage.js";
 const { getStorage, updateStorage, clearStorage } = useStorage();
+
+const { t } = useLocale();
 
 
 const loading = computed(() => loadingAuthors.value || loadingReviewers.value);

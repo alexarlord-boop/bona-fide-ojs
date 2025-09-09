@@ -24,5 +24,39 @@
       "cumulative_rank": "Rang Cumulatif",
       "difference": "Différence"
     }
+  },
+  "ui": {
+    "labels": {
+      "name": "Nom",
+      "attributes": "Attributs",
+      "affiliations": "Affiliations",
+      "emails": "Emails",
+      "overall": "Global",
+      "domain": "Domaine",
+      "orcid": "ORCID",
+      "loading": "Chargement...",
+      "reload": "Recharger",
+      "get_relation_graph": "Obtenir le graphe de relations",
+      "click_to_open_ror": "Cliquer pour ouvrir la page ROR",
+      "authors": "Auteurs",
+      "reviewers": "Réviseurs",
+      "loading_authors": "Chargement des Auteurs...",
+      "get_json_data": "Obtenir les Données JSON",
+      "reload_all": "Tout Recharger",
+      "show_details": "Afficher les Détails",
+      "hide_details": "Masquer les Détails"
+    },
+    "tabs": {
+      "authors_and_reviewers": "Auteurs et Réviseurs",
+      "report_preview": "Aperçu du Rapport",
+      "settings": "Paramètres",
+      "bona_fide": "Bona Fide"
+    },
+    "settings": {
+      "backend_base_url": "URL de Base du Backend",
+      "time_limit_polling": "Limite de temps pour les requêtes backend",
+      "language": "Langue",
+      "clear_cache": "Vider le cache"
+    }
   }
 }

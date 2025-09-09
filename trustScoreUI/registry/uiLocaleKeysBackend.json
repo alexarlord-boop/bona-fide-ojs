@@ -1,0 +1,22 @@
+[
+  "ui.labels.authors",
+  "ui.labels.click_to_open_ror",
+  "ui.labels.get_json_data",
+  "ui.labels.get_relation_graph",
+  "ui.labels.hide_details",
+  "ui.labels.loading",
+  "ui.labels.loading_authors",
+  "ui.labels.orcid",
+  "ui.labels.reload",
+  "ui.labels.reload_all",
+  "ui.labels.reviewers",
+  "ui.labels.show_details",
+  "ui.settings.backend_base_url",
+  "ui.settings.clear_cache",
+  "ui.settings.language",
+  "ui.settings.time_limit_polling",
+  "ui.tabs.authors_and_reviewers",
+  "ui.tabs.bona_fide",
+  "ui.tabs.report_preview",
+  "ui.tabs.settings"
+]

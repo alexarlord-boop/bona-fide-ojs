@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
+import { useLocale } from '../composables/useLocale.js';
 
 const props = defineProps(['subscores']);
+
+const { t } = useLocale();
 
 const hoveredScoreData = ref(null);
 const hoveredLabel = ref('');
@@ -77,6 +80,20 @@ function getClass(value) {
   return `bar-detail absolute top-0 h-full text-xs text-white px-1 flex items-center ${value > 0 ? '' : 'hidden'}`;
 }
 
+function translateScoreCategory(category) {
+  // Map score categories to translation keys
+  const categoryMap = {
+    'name': 'ui.labels.name',
+    'attributes': 'ui.labels.attributes',
+    'affiliations': 'ui.labels.affiliations',
+    'emails': 'ui.labels.emails',
+    'overall': 'ui.labels.overall',
+    'domain': 'ui.labels.domain'
+  };
+  
+  return categoryMap[category] ? t(categoryMap[category]) : category;
+}
+
 </script>
 
 <template>
@@ -87,7 +104,7 @@ function getClass(value) {
       class="subscore"
     >
       <div class="label text-lg font-semibold mb-1">
-        {{ label }} ({{ scoreData.total }})
+        {{ translateScoreCategory(label) }} ({{ scoreData.total }})
       </div>
 
       <div class="bar-container bg-gray-200 rounded h-6 relative overflow-hidden">
@@ -116,7 +133,7 @@ function getClass(value) {
       class="tooltip"
       :style="{ top: mouseY + 12 + 'px', left: mouseX + 12 + 'px' }"
     >
-      <div class="font-semibold mb-1">{{ hoveredLabel }} — total: {{ hoveredScoreData.total }}</div>
+      <div class="font-semibold mb-1">{{ translateScoreCategory(hoveredLabel) }} — total: {{ hoveredScoreData.total }}</div>
       <div v-for="(detail, i) in hoveredScoreData.details" :key="detail.label" class="tooltip-row">
         <span
           class="color-dot"

@@ -3,6 +3,7 @@ import ReportPreviewTab from "./components/ReportPreviewTab.vue";
 import Sidebar from "./components/Sidebar.vue";
 import SampleComponent from "./components/SampleComponent.vue";
 import SettingsTab from "./components/SettingsTab.vue";
+import { t } from "./utils/globalTranslations.js";
 
 pkp.registry.registerComponent('AuthorsAndReviewersTab', AuthorsAndReviewersTab);
 pkp.registry.registerComponent('ReportPreviewTab', ReportPreviewTab);
@@ -26,38 +27,38 @@ if (haveBackend && isUserEditor) {
 
             {
                 key: 'trustScoreTab',
-                label: 'Bona Fide',
-                title: 'Bona Fide',
+                label: t('ui.tabs.bona_fide'),
+                title: t('ui.tabs.bona_fide'),
                 icon: 'AnonymousReview',
                 items: [
                     // Scores tab
                     {
                         key: 'overview',
-                        label: 'Authors and Reviewers',
+                        label: t('ui.tabs.authors_and_reviewers'),
                         state: {
                             primaryMenuItem: 'AuthorsAndReviewersTab',
                             secondaryMenuItem: 'overview',
-                            title: 'Bona Fide: Authors and Reviewers'
+                            title: `${t('ui.tabs.bona_fide')}: ${t('ui.tabs.authors_and_reviewers')}`
                         }
                     },
                     // Report tab
                     {
                         key: 'report',
-                        label: 'Report Preview',
+                        label: t('ui.tabs.report_preview'),
                         state: {
                             primaryMenuItem: 'ReportPreviewTab',
                             secondaryMenuItem: 'report',
-                            title: 'Bona Fide: Report Preview'
+                            title: `${t('ui.tabs.bona_fide')}: ${t('ui.tabs.report_preview')}`
                         }
                     },
                     // Settings tab
                     {
                         key: 'settings',
-                        label: 'Settings',
+                        label: t('ui.tabs.settings'),
                         state: {
                             primaryMenuItem: 'trustScoreTab',
                             secondaryMenuItem: 'settings',
-                            title: 'Bona Fide: Settings'
+                            title: `${t('ui.tabs.bona_fide')}: ${t('ui.tabs.settings')}`
                         }
                     }
                 ]

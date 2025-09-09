@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { translations, availableLocales, getScoreTranslation } from '../utils/translations.js';
 import { useStorage } from '../components/useStorage.js';
+import { setGlobalLocale } from '../utils/globalTranslations.js';
 
 const currentLocale = ref('en');
 
@@ -11,12 +12,14 @@ export function useLocale() {
   const savedLocale = getStorage('locale');
   if (savedLocale && translations[savedLocale]) {
     currentLocale.value = savedLocale;
+    setGlobalLocale(savedLocale); // Initialize global translations
   }
   
   const setLocale = (locale) => {
     if (translations[locale]) {
       currentLocale.value = locale;
       updateStorage('locale', locale);
+      setGlobalLocale(locale); // Update global translations
     }
   };
   

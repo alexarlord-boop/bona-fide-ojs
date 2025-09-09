@@ -6,6 +6,7 @@ const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
 import generateJWT from '../utils/jwt.js';
+import { useLocale } from '../composables/useLocale.js';
 
 
 
@@ -16,6 +17,8 @@ console.log('--- Roles ---');
 console.log('Has Role:', cu?.hasCurrentUserAtLeastOneRole([16])); // 0=Admin, 1=Manager, 16=Main Editor, 512=Reviewer
 
 const isUserEditor = cu?.hasCurrentUserAtLeastOneRole([16]); // 16=Main Editor
+
+const { t } = useLocale();
 
 // Accordion state for authors and reviewers
 const authorAccordion = ref({});
@@ -210,8 +213,8 @@ watch(submission, async (newSubmission) => {
 
 <template>
   <div class="">
-    <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
-    <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
+    <UserSection v-if="isUserEditor" userType="author" :title="t('ui.labels.authors')" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
+    <UserSection v-if="isUserEditor" userType="reviewer" :title="t('ui.labels.reviewers')" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
   </div>
 </template>
 

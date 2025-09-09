@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <h4 class="mb-2">Backend Base URL</h4>
+    <h4 class="mb-2">{{ t('ui.settings.backend_base_url') }}</h4>
     <input
       type="text"
       v-model="baseUrl"
@@ -11,7 +11,7 @@
     <br/>
     <br/>
     <br/>
-    <h4 class="mb-2">Time limit for backend polling</h4>
+    <h4 class="mb-2">{{ t('ui.settings.time_limit_polling') }}</h4>
     <input
       type="range"
       min="1"
@@ -25,7 +25,7 @@
     <br/>
     <br/>
     <br/>
-    <h4 class="mb-2">Language</h4>
+    <h4 class="mb-2">{{ t('ui.settings.language') }}</h4>
     <select
       v-model="selectedLocale"
       @change="saveLocale"
@@ -48,7 +48,7 @@
         @click="clearStorage"
         class="clearBtn"
       >
-        Clear cache
+        {{ t('ui.settings.clear_cache') }}
       </button>
     </div>
   </div>
@@ -60,7 +60,7 @@ import { useStorage } from "./useStorage.js";
 import { useLocale } from "../composables/useLocale.js";
 
 const { getStorage, updateStorage, clearAll } = useStorage("local");
-const { currentLocale, availableLocales, setLocale } = useLocale();
+const { currentLocale, availableLocales, setLocale, t } = useLocale();
 
 const timeLimit = ref(1); // default
 const baseUrl = ref("");
