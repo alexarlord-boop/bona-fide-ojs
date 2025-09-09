@@ -8,6 +8,8 @@
   "ui.labels.load_json_report",
   "ui.labels.loading",
   "ui.labels.loading_authors",
+  "ui.labels.no_authors_found",
+  "ui.labels.no_reviewers_found",
   "ui.labels.orcid",
   "ui.labels.reload",
   "ui.labels.reload_all",

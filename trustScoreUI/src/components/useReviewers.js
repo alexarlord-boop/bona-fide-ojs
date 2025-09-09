@@ -4,11 +4,12 @@ const { useUrl } = pkp.modules.useUrl;
 const { useFetch } = pkp.modules.useFetch;
 
 import { useScoring } from "./useScoring.js";
-const { fetchUserById } = useScoring();
 
-export function useReviewers(submission) {
+export function useReviewers(submission, getTranslation = null) {
   const reviewers = ref([]);
   const loadingReviewers = ref(false);
+  
+  const { fetchUserById } = useScoring(getTranslation);
 
     // Fetch reviewers users by ID from the submission.reviewAssignments
     const fetchReviewersBulk = async () => {

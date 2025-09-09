@@ -46,7 +46,11 @@
       "show_details": "Afficher les Détails",
       "hide_details": "Masquer les Détails",
       "load_json_report": "Charger le Rapport JSON",
-      "invalid_json_file": "Fichier JSON invalide."
+      "invalid_json_file": "Fichier JSON invalide.",
+      "no_authors_found": "Aucun auteur trouvé",
+      "no_reviewers_found": "Aucun réviseur trouvé",
+      "no_results_backend": "Aucun nouveau résultat retourné par le backend",
+      "unknown_error": "Erreur inconnue"
     },
     "tabs": {
       "authors_and_reviewers": "Auteurs et Réviseurs",

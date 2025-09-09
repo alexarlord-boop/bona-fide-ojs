@@ -45,13 +45,13 @@ fetchSubmission().then(() => {
 });
 
 import { useScoring } from './useScoring.js';
-const { fetchUserById, loadingScores } = useScoring();
+const { fetchUserById, loadingScores } = useScoring(t);
 
 import { useAuthors } from './useAuthors';
-const { authors, loadingAuthors, fetchAuthorsBulk } = useAuthors(props.submissionId);
+const { authors, loadingAuthors, fetchAuthorsBulk } = useAuthors(props.submissionId, t);
 
 import { useReviewers } from "./useReviewers.js";
-const { reviewers, fetchReviewersBulk, loadingReviewers } = useReviewers(submission);
+const { reviewers, fetchReviewersBulk, loadingReviewers } = useReviewers(submission, t);
 
 import { useStorage } from "./useStorage.js";
 const { getStorage, updateStorage, clearStorage } = useStorage();

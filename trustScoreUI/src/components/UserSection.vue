@@ -12,7 +12,7 @@
        <!-- Users list -->
       <div v-else>
         <div v-if="users?.length === 0" class="empty">
-          No {{ title.toLowerCase() }} found.
+          {{ title.toLowerCase() === 'authors' ? t('ui.labels.no_authors_found') : t('ui.labels.no_reviewers_found') }}
         </div>
   
         <div v-for="(user, index) in users" :key="user.id" class="user-card">

@@ -46,7 +46,11 @@
       "show_details": "Details anzeigen",
       "hide_details": "Details ausblenden",
       "load_json_report": "JSON-Bericht laden",
-      "invalid_json_file": "Ungültige JSON-Datei."
+      "invalid_json_file": "Ungültige JSON-Datei.",
+      "no_authors_found": "Keine Autoren gefunden",
+      "no_reviewers_found": "Keine Gutachter gefunden",
+      "no_results_backend": "Keine neuen Ergebnisse vom Backend zurückgegeben",
+      "unknown_error": "Unbekannter Fehler"
     },
     "tabs": {
       "authors_and_reviewers": "Autoren und Gutachter",

@@ -5,7 +5,7 @@ import {useStorage} from "./useStorage.js";
 
 const secret = new TextEncoder().encode("a-string-secret-at-least-256-bits-long"); // must be at least 256 bits
 
-export function useScoring() {
+export function useScoring(getTranslation = null) {
 //  const loadingScores = ref(false);
   const loadingScores = ref({});
   const { getStorage } = useStorage("local"); // или "session"
@@ -77,7 +77,8 @@ export function useScoring() {
             const new_candidates = result?.researcher_info?.candidates || [];
             const hasResults = new_ror_scored_results.length > 0 || new_candidates.length > 0;
 
-            console.log("User error field:", hasResults ? null : "No results returned from backend");
+            const errorMessage = getTranslation ? getTranslation('ui.labels.no_results_backend') : "No new results returned from backend";
+            console.log("User error field:", hasResults ? null : errorMessage);
 
             return {
               id: user.id,
@@ -95,13 +96,14 @@ export function useScoring() {
                 },
                 score_breakdown: c.score_breakdown?.author || {},
               })) : user?.candidates || [],
-              error: hasResults ? null : "No new results returned from backend", // per-user error
+              error: hasResults ? null : errorMessage, // per-user error
 
             };
 
 
           } catch (err) {
             console.error(`Error fetching user ${user.id}:${newUserId}`, err);
+            const unknownErrorMessage = getTranslation ? getTranslation('ui.labels.unknown_error') : "Unknown error";
             return {
               id: user.id,
               stringId: newUserId,
@@ -110,7 +112,7 @@ export function useScoring() {
               ojsORCID: user.orcid || user.ojsORCID,
               ror_scored_results: user.ror_scored_results || [],
               candidates: user.candidates || [],
-              error: err.message || user.error || "Unknown error",
+              error: err.message || user.error || unknownErrorMessage,
             };
           } finally {
             loadingScores.value[newUserId] = false;

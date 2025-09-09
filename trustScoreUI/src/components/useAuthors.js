@@ -4,12 +4,13 @@ const { useUrl } = pkp.modules.useUrl;
 const { useFetch } = pkp.modules.useFetch;
 
 import { useScoring } from "./useScoring.js";
-const { fetchUserById } = useScoring();
 
 
-export function useAuthors(submissionId) {
+export function useAuthors(submissionId, getTranslation = null) {
   const authors = ref([]);
   const loadingAuthors = ref(false);
+  
+  const { fetchUserById } = useScoring(getTranslation);
 
   async function fetchAuthorsBulk() {
     console.log("Fetching array of users");
