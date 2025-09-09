@@ -44,16 +44,16 @@ fetchSubmission().then(() => {
   // console.error('Error fetching submission data:', error);
 });
 
-import { useScoring } from './useScoring.js';
+import { useScoring } from '../composables/useScoring.js';
 const { fetchUserById, loadingScores } = useScoring(t);
 
-import { useAuthors } from './useAuthors';
+import { useAuthors } from '../composables/useAuthors.js';
 const { authors, loadingAuthors, fetchAuthorsBulk } = useAuthors(props.submissionId, t);
 
-import { useReviewers } from "./useReviewers.js";
+import { useReviewers } from "../composables/useReviewers.js";
 const { reviewers, fetchReviewersBulk, loadingReviewers } = useReviewers(submission, t);
 
-import { useStorage } from "./useStorage.js";
+import { useStorage } from "../composables/useStorage.js";
 const { getStorage, updateStorage, clearStorage } = useStorage();
 
 const reloadSingleAuthor = async (user) => {

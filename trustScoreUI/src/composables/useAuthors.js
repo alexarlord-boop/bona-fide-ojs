@@ -3,7 +3,7 @@ import generateJWT from '../utils/jwt.js';
 const { useUrl } = pkp.modules.useUrl;
 const { useFetch } = pkp.modules.useFetch;
 
-import { useScoring } from "./useScoring.js";
+import { useScoring } from "../composables/useScoring.js";
 
 
 export function useAuthors(submissionId, getTranslation = null) {

@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { translations, availableLocales, getScoreTranslation } from '../utils/translations.js';
-import { useStorage } from '../components/useStorage.js';
+import { useStorage } from './useStorage.js';
 import { setGlobalLocale } from '../utils/globalTranslations.js';
 
 const currentLocale = ref('en');

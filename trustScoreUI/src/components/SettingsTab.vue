@@ -56,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useStorage } from "./useStorage.js";
+import { useStorage } from "../composables/useStorage.js";
 import { useLocale } from "../composables/useLocale.js";
 
 const { getStorage, updateStorage, clearAll } = useStorage("local");

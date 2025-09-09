@@ -8,7 +8,7 @@ import UserSection from './UserSection.vue'; // Import UserSection component
 import generateJWT from '../utils/jwt.js';
 import { useLocale } from '../composables/useLocale.js';
 
-import { useStorage } from "./useStorage.js";
+import { useStorage } from "../composables/useStorage.js";
 const { getStorage, updateStorage } = useStorage();
 
 

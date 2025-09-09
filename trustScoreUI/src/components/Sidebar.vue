@@ -14,8 +14,8 @@
 import { generatePDF } from "../utils/pdfGenerator";
 import { useLocale } from "../composables/useLocale.js";
 
-import { useAuthors } from './useAuthors';
-import { useReviewers } from "./useReviewers.js";
+import { useAuthors } from '../composables/useAuthors.js';
+import { useReviewers } from "../composables/useReviewers.js";
 import {computed, toRef} from "vue";
 
 const props = defineProps({
@@ -28,7 +28,7 @@ console.log('props in sidebar: ', submissionValue);
 
 const { fetchAuthorsBulk, loadingAuthors } = useAuthors(props.submissionId);
 const { fetchReviewersBulk, loadingReviewers } = useReviewers(submissionValue);
-import { useStorage } from "./useStorage.js";
+import { useStorage } from "../composables/useStorage.js";
 const { getStorage, updateStorage, clearStorage } = useStorage();
 
 const { t } = useLocale();

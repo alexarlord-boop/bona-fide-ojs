@@ -1,7 +1,7 @@
 
 import { ref } from 'vue';
 import generateJWT from '../utils/jwt.js';
-import {useStorage} from "./useStorage.js";
+import {useStorage} from "../composables/useStorage.js";
 
 const secret = new TextEncoder().encode("a-string-secret-at-least-256-bits-long"); // must be at least 256 bits
 
