@@ -1,0 +1,28 @@
+{
+  "scores": {
+    "ror": {
+      "crossref_bonus": "Bonus Crossref",
+      "dns_similarity_bonus": "Similarité DNS",
+      "dns_verification_bonus": "Vérification DNS",
+      "domain_match": "Correspondance de Domaine",
+      "domain_of_email_in_website_subdomain": "Email dans Sous-domaine du Site Web",
+      "domain_of_website_in_email_subdomain": "Site Web dans Sous-domaine de l'Email",
+      "email_is_subdomain_of_website_domain": "Email est Sous-domaine du Site Web",
+      "fully_qualified_domain_name_match": "Correspondance FQDN",
+      "subdomain_mismatch": "Incompatibilité de Sous-domaine",
+      "total": "Score Total",
+      "website_is_subdomain_of_email_domain": "Site Web est Sous-domaine de l'Email",
+      "whois_bonus": "Bonus WHOIS"
+    },
+    "base": {
+      "perfect_match": "Correspondance Parfaite",
+      "match": "Correspondance",
+      "count": "Nombre",
+      "avg_rank": "Rang Moyen",
+      "cumulative": "Cumulatif",
+      "attributes_w_perfect_match": "Attributs avec correspondance parfaite",
+      "cumulative_rank": "Rang Cumulatif",
+      "difference": "Différence"
+    }
+  }
+}

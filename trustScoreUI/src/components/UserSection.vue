@@ -52,7 +52,7 @@
               <br/>
 
               <div v-if="user?.ror_scored_results && user.ror_scored_results.length > 0 && user.ror_scored_results[0][1]" class="">
-                <ScoreBar :subscores="convertRorScoreToBreakdown(user.ror_scored_results[0][1])" />
+                <ScoreBar :subscores="convertRorScoreToBreakdown(user.ror_scored_results[0][1], 100, getScoreLabel)" />
               </div>
 
               <div v-if="user.candidates" class="subscores">
@@ -90,7 +90,7 @@
 
                   <!-- Right: scores -->
                   <div class="">
-                    <ScoreBar :subscores="convertBaseScoreBreakdown(cand.score_breakdown, maxOverall)" />
+                    <ScoreBar :subscores="convertBaseScoreBreakdown(cand.score_breakdown, maxOverall, getScoreLabel)" />
                   </div>
                 </div>
               </div>
@@ -106,8 +106,12 @@
   <script setup>
   import { computed } from "vue";
   import {convertRorScoreToBreakdown, convertBaseScoreBreakdown} from '../utils/scoresToBarConverter.js';
+  import { useLocale } from '../composables/useLocale.js';
 
   import ScoreBar from './ScoreBar.vue';
+  
+  const { getScoreLabel } = useLocale();
+  
   const props = defineProps({
     forReports: Boolean,
     title: String,

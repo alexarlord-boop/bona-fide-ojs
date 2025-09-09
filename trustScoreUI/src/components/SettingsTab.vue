@@ -25,6 +25,24 @@
     <br/>
     <br/>
     <br/>
+    <h4 class="mb-2">Language</h4>
+    <select
+      v-model="selectedLocale"
+      @change="saveLocale"
+      class="border p-1"
+    >
+      <option
+        v-for="locale in availableLocales"
+        :key="locale.code"
+        :value="locale.code"
+      >
+        {{ locale.name }}
+      </option>
+    </select>
+
+    <br/>
+    <br/>
+    <br/>
     <div class="mt-6">
       <button
         @click="clearStorage"
@@ -39,11 +57,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStorage } from "./useStorage.js";
+import { useLocale } from "../composables/useLocale.js";
 
 const { getStorage, updateStorage, clearAll } = useStorage("local");
+const { currentLocale, availableLocales, setLocale } = useLocale();
 
 const timeLimit = ref(1); // default
 const baseUrl = ref("");
+const selectedLocale = ref(currentLocale.value);
 
 onMounted(() => {
   const savedUrl = getStorage("baseUrl");
@@ -51,6 +72,8 @@ onMounted(() => {
 
   const savedTime = getStorage("timeLimit");
   if (savedTime) timeLimit.value = Number(savedTime);
+  
+  selectedLocale.value = currentLocale.value;
 });
 
 function saveBaseUrl() {
@@ -61,10 +84,16 @@ function saveTime() {
   updateStorage("timeLimit", timeLimit.value);
 }
 
+function saveLocale() {
+  setLocale(selectedLocale.value);
+}
+
 function clearStorage() {
   clearAll();
   baseUrl.value = "";
   timeLimit.value = 1;
+  selectedLocale.value = "en";
+  setLocale("en");
 }
 
 </script>

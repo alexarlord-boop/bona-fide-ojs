@@ -23,8 +23,10 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@formatjs/intl": "^3.1.6",
     "jose": "^6.0.13",
     "jspdf": "^3.0.1",
-    "vue": "^3.5.17"
+    "vue": "^3.5.17",
+    "vue-intl": "^6.5.25"
   }
 }
