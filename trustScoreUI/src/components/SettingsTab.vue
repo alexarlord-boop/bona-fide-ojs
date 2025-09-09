@@ -15,7 +15,7 @@
     <input
       type="range"
       min="1"
-      max="300"
+      max="601"
       step="60"
       v-model="timeLimit"
       @input="saveTime"

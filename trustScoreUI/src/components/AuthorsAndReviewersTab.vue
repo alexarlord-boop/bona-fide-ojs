@@ -51,7 +51,7 @@ import { useReviewers } from "./useReviewers.js";
 const { reviewers, fetchReviewersBulk, loadingReviewers } = useReviewers(submission);
 
 import { useStorage } from "./useStorage.js";
-const { getStorage, updateStorage } = useStorage();
+const { getStorage, updateStorage, clearStorage } = useStorage();
 
 const reloadSingleAuthor = async (user) => {
   const updated = await fetchUserById( user, 'author');
@@ -105,40 +105,91 @@ function toggleReviewer(index) {
 // Update reactive values when requested data changes
 // submission --> publication --> authors
 // submission --> reviewerAssignments --> reviewers
+//watch(submission, async (newSubmission) => {
+//  if (!newSubmission) return; // still no submission data
+//  if (!newSubmission.reviewAssignments) return; // still no necessary field
+//  if (newSubmission) {
+//    console.log('GOT SUBMISSION ID: ',props.submissionId);
+//    console.log('SAVED SUBMISSION ID: ',getStorage('submissionId'));
+//
+//    const isNewSubmission = props.submissionId !== getStorage('submissionId');
+//
+//    try {
+//      const parsed = getStorage('trustScoreData');
+//
+//      // If both authors and reviewers are cached, just load them
+//      if (!isNewSubmission && parsed?.authors?.length && parsed?.reviewers?.length) {
+//        authors.value = parsed.authors;
+//        reviewers.value = parsed.reviewers;
+//      } else {
+//        if (isNewSubmission) {
+//          updateStorage('submissionId', props.submissionId);
+//        }
+//        // Build promises depending on what's missing
+//        const promises = [];
+//        if (!parsed?.authors?.length) {
+//          promises.push(fetchAuthorsBulk());
+//        } else {
+//          authors.value = parsed.authors;
+//        }
+//
+//        if (!parsed?.reviewers?.length) {
+//          promises.push(fetchReviewersBulk());
+//        } else {
+//          reviewers.value = parsed.reviewers;
+//        }
+//
+//        // Run them in parallel
+//        await Promise.all(promises);
+//      }
+//
+//      // Store data in sessionStorage after all requests succeed
+//      console.log('authors', authors.value);
+//      console.log('reviewers', reviewers.value);
+//      if (authors.value?.length && reviewers.value?.length) {
+//        const trustScoreData = {
+//          authors: authors.value,
+//          reviewers: reviewers.value,
+//          submissionId: props.submissionId,
+//          submissionTitle: submissionData.value.title || 'Untitled Submission',
+//        };
+//        updateStorage('trustScoreData', trustScoreData);
+//        console.log(trustScoreData);
+//      }
+//    } catch (error) {
+//      console.error('Error storing data in sessionStorage:', error);
+//    }
+//
+//  }
+//});
+
 watch(submission, async (newSubmission) => {
-  if (!newSubmission) return; // still no submission data
-  if (!newSubmission.reviewAssignments) return; // still no necessary field
-  if (newSubmission) {
+  if (!newSubmission?.reviewAssignments) return;
 
-    try {
-      const parsed = getStorage('trustScoreData');
+  console.log('GOT SUBMISSION ID: ', props.submissionId);
+  console.log('SAVED SUBMISSION ID: ', getStorage('submissionId'));
 
-      // If both authors and reviewers are cached, just load them
-      if (parsed?.authors?.length && parsed?.reviewers?.length) {
-        authors.value = parsed.authors;
-        reviewers.value = parsed.reviewers;
-      } else {
-        // Build promises depending on what's missing
-        const promises = [];
-        if (!parsed?.authors?.length) {
-          promises.push(fetchAuthorsBulk());
-        } else {
-          authors.value = parsed.authors;
-        }
+  const isSameSubmission = props.submissionId === getStorage('submissionId');
 
-        if (!parsed?.reviewers?.length) {
-          promises.push(fetchReviewersBulk());
-        } else {
-          reviewers.value = parsed.reviewers;
-        }
+  try {
+    const parsed = getStorage('trustScoreData');
 
-        // Run them in parallel
-        await Promise.all(promises);
-      }
+    if (isSameSubmission && parsed?.authors?.length && parsed?.reviewers?.length) {
+      // ✅ Load from cache
+      authors.value = parsed.authors;
+      reviewers.value = parsed.reviewers;
+      console.log('Loaded authors/reviewers from storage');
+    } else {
+      // 🔄 Different submission OR no cache → fetch fresh
+      updateStorage('submissionId', props.submissionId);
 
-      // Store data in sessionStorage after all requests succeed
-      console.log('authors', authors.value);
-      console.log('reviewers', reviewers.value);
+      const promises = [];
+      promises.push(fetchAuthorsBulk());
+      promises.push(fetchReviewersBulk());
+
+      await Promise.all(promises);
+
+      // Save fresh results
       if (authors.value?.length && reviewers.value?.length) {
         const trustScoreData = {
           authors: authors.value,
@@ -147,46 +198,14 @@ watch(submission, async (newSubmission) => {
           submissionTitle: submissionData.value.title || 'Untitled Submission',
         };
         updateStorage('trustScoreData', trustScoreData);
-        console.log(trustScoreData);
+        console.log('Fetched fresh authors/reviewers', trustScoreData);
       }
-    } catch (error) {
-      console.error('Error storing data in sessionStorage:', error);
     }
-
+  } catch (error) {
+    console.error('Error handling submission data:', error);
   }
 });
 
-// --- NEW: Load JSON file into storage and reactive state ---
-const fileInput = ref(null);
-
-function loadJsonFromFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-
-      // Save to storage
-      updateStorage('trustScoreData', data);
-      console.log('Loaded JSON into storage:', data);
-
-      // Apply immediately to reactive vars
-      if (data.authors) authors.value = data.authors;
-      if (data.reviewers) reviewers.value = data.reviewers;
-
-      // Reset accordions so UI is consistent
-      authorAccordion.value = {};
-      reviewerAccordion.value = {};
-
-    } catch (err) {
-      console.error('Error parsing JSON:', err);
-      alert('Invalid JSON file.');
-    }
-  };
-  reader.readAsText(file);
-}
 </script>
 
 <template>
@@ -194,14 +213,6 @@ function loadJsonFromFile(event) {
     <UserSection v-if="isUserEditor" userType="author" title="Authors" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
     <UserSection v-if="isUserEditor" userType="reviewer" title="Reviewers" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
   </div>
-  <!-- JSON upload button -->
-  <div class="mt-4">
-    <label class="uploadBtn">
-      Load JSON Report
-      <input type="file" accept=".json" @change="loadJsonFromFile" style="display:none"/>
-    </label>
-  </div>
-
 </template>
 
 <style scoped>

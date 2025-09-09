@@ -1,12 +1,14 @@
-import TrustScoreUI from "./components/TrustScoreUI.vue";
+import AuthorsAndReviewersTab from "./components/AuthorsAndReviewersTab.vue";
+import ReportPreviewTab from "./components/ReportPreviewTab.vue";
 import Sidebar from "./components/Sidebar.vue";
 import SampleComponent from "./components/SampleComponent.vue";
-import Settings from "./components/Settings.vue";
+import SettingsTab from "./components/SettingsTab.vue";
 
-pkp.registry.registerComponent('TrustScoreUI', TrustScoreUI);
+pkp.registry.registerComponent('AuthorsAndReviewersTab', AuthorsAndReviewersTab);
+pkp.registry.registerComponent('ReportPreviewTab', ReportPreviewTab);
 pkp.registry.registerComponent('Sidebar', Sidebar);
 pkp.registry.registerComponent('SampleComponent', SampleComponent);
-pkp.registry.registerComponent('Settings', Settings);
+pkp.registry.registerComponent('SettingsTab', SettingsTab);
 
 const { useCurrentUser } = pkp.modules.useCurrentUser;
 const cu = useCurrentUser();
@@ -31,11 +33,21 @@ if (haveBackend && isUserEditor) {
                     // Scores tab
                     {
                         key: 'overview',
-                        label: 'Overview',
+                        label: 'Authors and Reviewers',
                         state: {
-                            primaryMenuItem: 'trustScoreTab',
+                            primaryMenuItem: 'AuthorsAndReviewersTab',
                             secondaryMenuItem: 'overview',
-                            title: 'Bona Fide: Overview'
+                            title: 'Bona Fide: Authors and Reviewers'
+                        }
+                    },
+                    // Report tab
+                    {
+                        key: 'report',
+                        label: 'Report Preview',
+                        state: {
+                            primaryMenuItem: 'ReportPreviewTab',
+                            secondaryMenuItem: 'report',
+                            title: 'Bona Fide: Report Preview'
                         }
                     },
                     // Settings tab
@@ -61,7 +73,17 @@ if (haveBackend && isUserEditor) {
         if (store.selectedMenuState.secondaryMenuItem === 'overview') {
             items.push({
                 key: 'overview',
-                component: 'TrustScoreUI',
+                component: 'AuthorsAndReviewersTab',
+                props: {
+                    submissionId: store.submissionId,
+                }
+            });
+        }
+        // Report tab injection
+        if (store.selectedMenuState.secondaryMenuItem === 'report') {
+            items.push({
+                key: 'report',
+                component: 'ReportPreviewTab',
                 props: {
                     submissionId: store.submissionId,
                 }
@@ -71,7 +93,7 @@ if (haveBackend && isUserEditor) {
         if (store.selectedMenuState.secondaryMenuItem === 'settings') {
             items.push({
                 key: 'settings',
-                component: 'Settings',
+                component: 'SettingsTab',
                 props: {
                     submissionId: store.submissionId,
                 }

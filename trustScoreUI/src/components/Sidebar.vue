@@ -27,6 +27,9 @@ console.log('props in sidebar: ', submissionValue);
 
 const { fetchAuthorsBulk, loadingAuthors } = useAuthors(props.submissionId);
 const { fetchReviewersBulk, loadingReviewers } = useReviewers(submissionValue);
+import { useStorage } from "./useStorage.js";
+const { getStorage, updateStorage, clearStorage } = useStorage();
+
 
 const loading = computed(() => loadingAuthors.value || loadingReviewers.value);
 
@@ -36,7 +39,7 @@ function fetchAll() {
 }
 
 function generatePDFReport() {
-    const cachedData = sessionStorage.getItem('trustScoreData');
+    const cachedData = getStorage('trustScoreData');
     if (!cachedData) {
         console.error('No cached data found for PDF generation.');
         return;

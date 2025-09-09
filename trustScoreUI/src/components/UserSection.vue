@@ -36,7 +36,7 @@
 
           <transition name="fade">
             <div v-if="accordionState[index]" class="user-details">
-              <div class="details-section">
+              <div v-if="!forReports" class="details-section">
                 <div class="details-btn" @click="emit('fetchAgainOne', user)">
                   <span v-if="props.loading[user.stringId]">⏳ Loading...</span>
                   <span v-else>↻ Reload</span>
@@ -109,6 +109,7 @@
 
   import ScoreBar from './ScoreBar.vue';
   const props = defineProps({
+    forReports: Boolean,
     title: String,
     userType: String,
     users: Array,
