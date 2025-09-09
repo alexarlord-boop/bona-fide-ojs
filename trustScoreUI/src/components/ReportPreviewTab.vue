@@ -6,6 +6,7 @@ const { useCurrentUser } = pkp.modules.useCurrentUser;
 import { ref, watch } from 'vue';
 import UserSection from './UserSection.vue'; // Import UserSection component
 import generateJWT from '../utils/jwt.js';
+import { useLocale } from '../composables/useLocale.js';
 
 import { useStorage } from "./useStorage.js";
 const { getStorage, updateStorage } = useStorage();
@@ -18,6 +19,8 @@ console.log('--- Roles ---');
 console.log('Has Role:', cu?.hasCurrentUserAtLeastOneRole([16])); // 0=Admin, 1=Manager, 16=Main Editor, 512=Reviewer
 
 const isUserEditor = cu?.hasCurrentUserAtLeastOneRole([16]); // 16=Main Editor
+
+const { t } = useLocale();
 
 // Accordion state for authors and reviewers
 const authorAccordion = ref({});
@@ -67,7 +70,7 @@ function loadJsonFromFile(event) {
 
     } catch (err) {
       console.error('Error parsing JSON:', err);
-      alert('Invalid JSON file.');
+      alert(t('ui.labels.invalid_json_file'));
     }
   };
   reader.readAsText(file);
@@ -76,13 +79,13 @@ function loadJsonFromFile(event) {
 
 <template>
   <div class="">
-    <UserSection v-if="isUserEditor" :forReports="true" userType="author" title="Authors" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
-    <UserSection v-if="isUserEditor" :forReports="true" userType="reviewer" title="Reviewers" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
+    <UserSection v-if="isUserEditor" :forReports="true" userType="author" :title="t('ui.labels.authors')" :users="authors" :bulkLoading="loadingAuthors" :loading="loadingScores" :accordionState="authorAccordion" @toggle="toggleAuthor" @fetchAgainOne="(user) => reloadSingleAuthor(user)"/>
+    <UserSection v-if="isUserEditor" :forReports="true" userType="reviewer" :title="t('ui.labels.reviewers')" :users="reviewers" :bulkLoading="loadingReviewers" :loading="loadingScores" :accordionState="reviewerAccordion" @toggle="toggleReviewer"  @fetchAgainOne="(user) => reloadSingleReviewer(user)"/>
   </div>
   <!-- JSON upload button -->
   <div class="mt-4">
     <label class="uploadBtn">
-      Load JSON Report
+      {{ t('ui.labels.load_json_report') }}
       <input type="file" accept=".json" @change="loadJsonFromFile" style="display:none"/>
     </label>
   </div>

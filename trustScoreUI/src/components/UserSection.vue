@@ -235,25 +235,30 @@
   .toggle-btn:hover {
     background: #125ea2;
   }
-/*  .details-section {*/
-/*    background: rgba(255);*/
-/*    height: 30px;*/
-/*    z-index: 100;*/
-/*    position: sticky;*/
-/*    top: 0;*/
-/*  }*/
+  .details-section {
+
+        display: flex;
+    flex-direction: row;
+    gap: 8px;
+    padding: 10px;
+  }
   .details-btn {
-    max-width: 125px;
-    margin-right: 10px;
-    padding: 5px;
+    max-width: 220px;
+    min-width: 120px;
+    padding: 8px 15px;
     color:  #1976d2;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    float: right; /* Align to the right */
-    margin-left: auto; /* Ensure proper alignment */
-  }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-align: center;
+    transition: all 0.2s ease;
+    align-self: flex-end;
+}
 
   .details-btn:hover {
     background: #e3f2fd;

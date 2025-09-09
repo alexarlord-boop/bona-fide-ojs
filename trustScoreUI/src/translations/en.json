@@ -44,7 +44,9 @@
       "get_json_data": "Get JSON Data",
       "reload_all": "Reload All",
       "show_details": "Show Details",
-      "hide_details": "Hide Details"
+      "hide_details": "Hide Details",
+      "load_json_report": "Load JSON Report",
+      "invalid_json_file": "Invalid JSON file."
     },
     "tabs": {
       "authors_and_reviewers": "Authors and Reviewers",

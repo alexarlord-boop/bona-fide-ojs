@@ -87,18 +87,27 @@ function getCachedTrustScoreData(pretty=true) {
 .component {
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
 
 .details-btn {
-    max-width: 150px;
-    padding: 0 15px;
+    max-width: 220px;
+    min-width: 120px;
+    padding: 8px 15px;
     color:  #1976d2;
     font-size: 0.8rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    float: right; /* Align to the right */
-    margin-left: auto; /* Ensure proper alignment */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-align: center;
+    transition: all 0.2s ease;
+    align-self: flex-end;
 }
 
 .details-btn:hover {

@@ -4,6 +4,8 @@
   "ui.labels.get_json_data",
   "ui.labels.get_relation_graph",
   "ui.labels.hide_details",
+  "ui.labels.invalid_json_file",
+  "ui.labels.load_json_report",
   "ui.labels.loading",
   "ui.labels.loading_authors",
   "ui.labels.orcid",
