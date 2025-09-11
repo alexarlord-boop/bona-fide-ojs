@@ -1,27 +1,66 @@
-### Bona Fide Plugin and Backend
+# Bona Fide Plugin
 
-The **Bona Fide Plugin** is an OJS extension designed to enhance the workflow by integrating trust scoring functionality for authors and reviewers. It provides a user interface to display trust scores directly within the OJS backend, enabling editors to make informed decisions during the review process.
+The **Bona Fide Plugin** is an OJS extension designed to enhance the workflow of journal editors by integrating scoring functionality for authors and reviewers. It provides a user interface to display various scores directly within the OJS submission page, enabling editors to make informed decisions during the review process and mitigate manual overheads related to vetting the submission actors.
 
-The **backend** is a FastAPI-based service that supports the plugin by handling the following key functionalities:
-- **Bulk Verification**: Processes author and reviewer data to calculate trust scores.
-- **PDF Export**: Generates trust score reports in PDF format for easy sharing and record-keeping.
-- **Integration**: Communicates with the plugin via RESTful APIs to dynamically update trust scores.
+_Limitation: during the plugin development for OJS v3.4.+ a migration to a newer v3.5.+ occured. You can still find the older version plugin branch with hooks usage and custom JS UI embedding examples, but it is considered obsolete._
 
-Both components are containerized using Docker and integrated into the OJS system through Docker Compose for seamless deployment and scalability.
+## Two ways of plugin installation in the OJS system
+**For plugin developers:** it is more suitable to streamline the development experience with Docker Compose and volume mounts.
 
-### Installation Instructions
-1. - .
-1. - .
-1. - .
+**For plugin final users:** usually, the production environment for OJS is not a Docker setup, therefore native OJS plugin upload with zip archive is a way to go.
 
 
+### 1. Docker Compose setup for OJS v3.5.+ plugin development
 
-### Plugin artefact generation
+**Quick DX overview:** there are 3 components developers need:
+1. General PKP Dockerized setup, tuned for OJS tool.
+2. Your plugin development environment with a separate repository in VCS. This is what we will mount as a volume to the 1st component.
+3. Backend with scoring business logic.
 
-```bash
-tar -czvf bona-fide.tar.gz artefacts/
+Below these components will be referenced as C1, C2, C3 respectively. Assume C1,C2,C3 are on the same directory level.
+
+#### 1.1. OJS system containerized setup (C1)
+-  [Installation guide](https://github.com/pkp/containers)
+- In docker-compose.yml of C1, add C2 location to services.app.volumes section:
+```yaml
+services:
+  app:
+    volumes:
+      - ../C2/plugin-name:/var/www/html/plugins/generic/plugin-name    # in our case plugin-name is trustScoreUI
 ```
 
-### Plugin upload to OJS website
-- Brand new:
-- Upgrade: change version.xml with new metadata --> generate new file --> "Upgrade" via option of the plugin.
+#### 1.2. OJS plugin embedding and Development (C2)
+1. OJS v3.5.+ is using [Vue3](https://vuejs.org/), allowing for huge customization opportunities. [OJS 3.5 release notebook](https://docs.pkp.sfu.ca/dev/release-notebooks/en/3.5-release-notebook)
+1. Frontend tooling standard: [Vite](https://vite.dev/)
+
+- plugin directory must be mounted to OJS system if we want to see instant live updates
+
+```bash
+cd ../C2/plugin-name
+npm install
+npm run watch # build and live update on code changes
+```
+
+#### 1.3. Backend (C3)
+- [Bona Fide Backend](https://github.com/PeterBolha/bona-fide-researcher)
+
+Build and run with comands:
+```bash
+docker build -t bf-backend .
+docker run -d -p 5000:5000 --name bf-backend bf-backend
+```
+
+### 2. Zip archive artefact
+**Quick usage overview:** Plugin upload to OJS is as simple as dropping a zip archive of the plugin in the website settings. For the final zip archive you need:
+1. build artefact for plugin - vite compiled results
+2. php plugin injection wrapper
+3. version.xml
+#### 2.1. Plugin artefact generation
+Compose a folder (e.g. `artefacts/`) with necessary files and run:
+```bash
+tar -czvf plugin-name.tar.gz artefacts/
+```
+#### 2.2. Plugin upload to OJS website options
+- Brand new: On your OJS website go to Settings > Website > Plugins > Upload A New Plugin and drop the zip there.
+- Upgrade: change version.xml with new metadata > generate new file > "Upgrade" via option of the plugin.
+- Reupload: delete plugin and upload as brand new without version change.
