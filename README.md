@@ -64,3 +64,20 @@ tar -czvf plugin-name.tar.gz artefacts/
 - Brand new: On your OJS website go to `Settings > Website > Plugins > Upload A New Plugin` and drop the zip there.
 - Upgrade: change version.xml with new metadata > generate new file > "Upgrade" via option of the plugin followign `Settings > Website > Plugins`.
 - Reupload: delete plugin and upload as brand new without version change.
+
+
+# Preview
+### Local docker setup: C1 and C3:
+![docker](./docker-preview.png)
+
+### New custom tab for submission:
+![plugin](./plugin-preview.png)
+
+### Authors and Reviewers Tab:
+![actors](plugin-tab1.png)
+
+### Report Preview Tab:
+![actors](plugin-tab2.png)
+
+### Settings Tab:
+![actors](plugin-tab3.png)
