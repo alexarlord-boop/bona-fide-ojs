@@ -44,7 +44,7 @@ npm run watch # build and live update on code changes
 #### 1.3. Backend (C3)
 - [Bona Fide Backend](https://github.com/PeterBolha/bona-fide-researcher)
 
-Build and run with comands:
+Build and run with commands:
 ```bash
 docker build -t bf-backend .
 docker run -d -p 5000:5000 --name bf-backend bf-backend
@@ -52,15 +52,15 @@ docker run -d -p 5000:5000 --name bf-backend bf-backend
 
 ### 2. Zip archive artefact
 **Quick usage overview:** Plugin upload to OJS is as simple as dropping a zip archive of the plugin in the website settings. For the final zip archive you need:
-1. build artefact for plugin - vite compiled results
-2. php plugin injection wrapper
-3. version.xml
+1. build artefact for plugin - vite compiled results inside `plugin-name/dist/` folder;
+2. php plugin injection wrapper, e.g. `PluginNamePlugin.php`;
+3. `version.xml` that stores plugin metadata
 #### 2.1. Plugin artefact generation
 Compose a folder (e.g. `artefacts/`) with necessary files and run:
 ```bash
 tar -czvf plugin-name.tar.gz artefacts/
 ```
 #### 2.2. Plugin upload to OJS website options
-- Brand new: On your OJS website go to Settings > Website > Plugins > Upload A New Plugin and drop the zip there.
-- Upgrade: change version.xml with new metadata > generate new file > "Upgrade" via option of the plugin.
+- Brand new: On your OJS website go to `Settings > Website > Plugins > Upload A New Plugin` and drop the zip there.
+- Upgrade: change version.xml with new metadata > generate new file > "Upgrade" via option of the plugin followign `Settings > Website > Plugins`.
 - Reupload: delete plugin and upload as brand new without version change.
