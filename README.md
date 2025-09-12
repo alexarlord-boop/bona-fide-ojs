@@ -2,7 +2,7 @@
 
 The **Bona Fide Plugin** is an OJS extension designed to enhance the workflow of journal editors by integrating scoring functionality for authors and reviewers. It provides a user interface to display various scores directly within the OJS submission page, enabling editors to make informed decisions during the review process and mitigate manual overheads related to vetting the submission actors.
 
-_Limitation: during the plugin development for OJS v3.4.+ a migration to a newer v3.5.+ occured. You can still find the older version plugin branch with hooks usage and custom JS UI embedding examples, but it is considered obsolete._
+_Caution: during the plugin development for OJS v3.4.+ a migration to a newer v3.5.+ occured. You can still find the older version plugin branch with hooks usage and custom JS UI embedding examples, but it is considered obsolete._
 
 ## Two ways of plugin installation in the OJS system
 **For plugin developers:** it is more suitable to streamline the development experience with Docker Compose and volume mounts.
