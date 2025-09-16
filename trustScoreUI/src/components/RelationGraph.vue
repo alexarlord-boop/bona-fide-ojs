@@ -15,7 +15,9 @@
 
 <script setup>
 import {ref, watch, nextTick} from 'vue';
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
+import { drag } from 'd3-drag';
 import {useResearcherGraph} from "../composables/useResearcherGraph.js";
 
 const {
@@ -49,7 +51,7 @@ async function renderGraph() {
 
   console.log(JSON.stringify(graphData));
 
-  const svg = d3.select(container)
+  const svg = select(container)
       .append("svg")
       .attr("width", width)
       .attr("height", height);
@@ -60,10 +62,10 @@ async function renderGraph() {
     nodes[d.target] = {id: d.target};
   });
 
-  const simulation = d3.forceSimulation(Object.values(nodes))
-      .force("link", d3.forceLink(graphData).id(d => d.id).distance(80))
-      .force("charge", d3.forceManyBody().strength(-200))
-      .force("center", d3.forceCenter(width / 2, height / 2));
+  const simulation = forceSimulation(Object.values(nodes))
+      .force("link", forceLink(graphData).id(d => d.id).distance(80))
+      .force("charge", forceManyBody().strength(-200))
+      .force("center", forceCenter(width / 2, height / 2));
 
   const link = svg.append("g")
       .attr("stroke", "#aaa")
@@ -81,7 +83,7 @@ async function renderGraph() {
       .attr("stroke", "#fff")
       .attr("stroke-width", 2)
       .style("cursor", "pointer")
-      .call(drag(simulation));
+      .call(dragBehavior(simulation));
 
   const label = svg.append("g")
       .selectAll("text")
@@ -108,8 +110,8 @@ async function renderGraph() {
         .attr("y", d => d.y + 4);
   });
 
-  function drag(sim) {
-    return d3.drag()
+  function dragBehavior(sim) {
+    return drag()
         .on("start", event => {
           if (!event.active) sim.alphaTarget(0.3).restart();
           event.subject.fx = event.subject.x;
