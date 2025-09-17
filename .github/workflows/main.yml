@@ -49,9 +49,12 @@ jobs:
 
       - name: Create plugin tar.gz archive
         run: |
-          ARCHIVE_NAME="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}.tar.gz"
-          # use -C to move into the directory containing artefacts
-          tar -czvf "$ARCHIVE_NAME" -C "$GITHUB_WORKSPACE" artefacts
+          PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
+          ARCHIVE_NAME="${PLUGIN}.tar.gz"
+          # Go to artefacts' parent directory first
+          cd artefacts/.. || exit 1
+          # Tar only the artefacts folder, no extra files
+          tar -czvf "$ARCHIVE_NAME" artefacts/
           ls -lh "$ARCHIVE_NAME"
           echo "Created $ARCHIVE_NAME"
 
