@@ -1,9 +1,6 @@
 name: Build OJS plugin ZIP
 
 on:
-  push:
-    branches:
-      - version-3.5
   workflow_dispatch:
     inputs:
       plugin_name:
