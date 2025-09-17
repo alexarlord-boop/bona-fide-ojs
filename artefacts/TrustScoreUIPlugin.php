@@ -71,8 +71,6 @@ class TrustScoreUIPlugin extends GenericPlugin
         // $context = $request->getContext();
         // $user = $request->getUser();
 
-        $apiUrl = $this->getSetting(0, 'apiUrl');
-        $secret = $this->getSetting(0, 'apiSecret');
 
         error_log('TrustScoreUIPlugin: Requested page: ' . $request->getRequestedPage());
         error_log('TrustScoreUIPlugin: Requested op: ' . $request->getRequestedOp());

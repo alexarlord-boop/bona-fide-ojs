@@ -1,8 +1,0 @@
-{
-    "name": "trustScoreUI",
-    "displayName": "Trust Score UI Plugin",
-    "description": "Displays trust scores for authors and reviewers.",
-    "version": "1.0.0",
-    "license": "MIT",
-    "category": "generic"
-  }

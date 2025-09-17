@@ -1,0 +1,68 @@
+{
+  "scores": {
+    "ror": {
+      "crossref_bonus": "Bonus Crossref",
+      "dns_similarity_bonus": "Similarité DNS",
+      "dns_verification_bonus": "Vérification DNS",
+      "domain_match": "Correspondance de Domaine",
+      "domain_of_email_in_website_subdomain": "Email dans Sous-domaine du Site Web",
+      "domain_of_website_in_email_subdomain": "Site Web dans Sous-domaine de l'Email",
+      "email_is_subdomain_of_website_domain": "Email est Sous-domaine du Site Web",
+      "fully_qualified_domain_name_match": "Correspondance FQDN",
+      "subdomain_mismatch": "Incompatibilité de Sous-domaine",
+      "total": "Score Total",
+      "website_is_subdomain_of_email_domain": "Site Web est Sous-domaine de l'Email",
+      "whois_bonus": "Bonus WHOIS"
+    },
+    "base": {
+      "perfect_match": "Correspondance Parfaite",
+      "match": "Correspondance",
+      "count": "Nombre",
+      "avg_rank": "Rang Moyen",
+      "cumulative": "Cumulatif",
+      "attributes_w_perfect_match": "Attributs avec correspondance parfaite",
+      "cumulative_rank": "Rang Cumulatif",
+      "difference": "Différence"
+    }
+  },
+  "ui": {
+    "labels": {
+      "name": "Nom",
+      "attributes": "Attributs",
+      "affiliations": "Affiliations",
+      "emails": "Emails",
+      "overall": "Global",
+      "domain": "Domaine",
+      "orcid": "ORCID",
+      "loading": "Chargement...",
+      "reload": "Recharger",
+      "get_relation_graph": "Obtenir le graphe de relations",
+      "click_to_open_ror": "Cliquer pour ouvrir la page ROR",
+      "authors": "Auteurs",
+      "reviewers": "Réviseurs",
+      "loading_authors": "Chargement des Auteurs...",
+      "get_json_data": "Obtenir les Données JSON",
+      "reload_all": "Tout Recharger",
+      "show_details": "Afficher les Détails",
+      "hide_details": "Masquer les Détails",
+      "load_json_report": "Charger le Rapport JSON",
+      "invalid_json_file": "Fichier JSON invalide.",
+      "no_authors_found": "Aucun auteur trouvé",
+      "no_reviewers_found": "Aucun réviseur trouvé",
+      "no_results_backend": "Aucun nouveau résultat retourné par le backend",
+      "unknown_error": "Erreur inconnue"
+    },
+    "tabs": {
+      "authors_and_reviewers": "Auteurs et Réviseurs",
+      "report_preview": "Aperçu du Rapport",
+      "settings": "Paramètres",
+      "bona_fide": "Bona Fide"
+    },
+    "settings": {
+      "backend_base_url": "URL de Base du Backend",
+      "time_limit_polling": "Limite de temps pour les requêtes backend",
+      "language": "Langue",
+      "clear_cache": "Vider le cache"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "scores": {
+    "ror": {
+      "crossref_bonus": "Crossref-Bonus",
+      "dns_similarity_bonus": "DNS-Ähnlichkeit",
+      "dns_verification_bonus": "DNS-Verifizierung",
+      "domain_match": "Domain-Übereinstimmung",
+      "domain_of_email_in_website_subdomain": "E-Mail in Website-Subdomain",
+      "domain_of_website_in_email_subdomain": "Website in E-Mail-Subdomain",
+      "email_is_subdomain_of_website_domain": "E-Mail ist Subdomain der Website",
+      "fully_qualified_domain_name_match": "FQDN-Übereinstimmung",
+      "subdomain_mismatch": "Subdomain-Abweichung",
+      "total": "Gesamtpunktzahl",
+      "website_is_subdomain_of_email_domain": "Website ist Subdomain der E-Mail",
+      "whois_bonus": "WHOIS-Bonus"
+    },
+    "base": {
+      "perfect_match": "Perfekte Übereinstimmung",
+      "match": "Übereinstimmung",
+      "count": "Anzahl",
+      "avg_rank": "Durchschnittsrang",
+      "cumulative": "Kumulativ",
+      "attributes_w_perfect_match": "Attribute mit perfekter Übereinstimmung",
+      "cumulative_rank": "Kumulativer Rang",
+      "difference": "Differenz"
+    }
+  },
+  "ui": {
+    "labels": {
+      "name": "Name",
+      "attributes": "Attribute",
+      "affiliations": "Zugehörigkeiten",
+      "emails": "E-Mails",
+      "overall": "Gesamt",
+      "domain": "Domain",
+      "orcid": "ORCID",
+      "loading": "Laden...",
+      "reload": "Neu laden",
+      "get_relation_graph": "Beziehungsdiagramm abrufen",
+      "click_to_open_ror": "Klicken Sie hier, um die ROR-Seite zu öffnen",
+      "authors": "Autoren",
+      "reviewers": "Gutachter",
+      "loading_authors": "Autoren werden geladen...",
+      "get_json_data": "JSON-Daten abrufen",
+      "reload_all": "Alles neu laden",
+      "show_details": "Details anzeigen",
+      "hide_details": "Details ausblenden",
+      "load_json_report": "JSON-Bericht laden",
+      "invalid_json_file": "Ungültige JSON-Datei.",
+      "no_authors_found": "Keine Autoren gefunden",
+      "no_reviewers_found": "Keine Gutachter gefunden",
+      "no_results_backend": "Keine neuen Ergebnisse vom Backend zurückgegeben",
+      "unknown_error": "Unbekannter Fehler"
+    },
+    "tabs": {
+      "authors_and_reviewers": "Autoren und Gutachter",
+      "report_preview": "Berichtsvorschau",
+      "settings": "Einstellungen",
+      "bona_fide": "Bona Fide"
+    },
+    "settings": {
+      "backend_base_url": "Backend-Basis-URL",
+      "time_limit_polling": "Zeitlimit für Backend-Abfragen",
+      "language": "Sprache",
+      "clear_cache": "Cache löschen"
+    }
+  }
+}

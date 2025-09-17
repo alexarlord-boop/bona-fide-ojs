@@ -1,0 +1,68 @@
+{
+  "scores": {
+    "ror": {
+      "crossref_bonus": "Crossref Bonus",
+      "dns_similarity_bonus": "DNS Similarity",
+      "dns_verification_bonus": "DNS Verification",
+      "domain_match": "Domain Match",
+      "domain_of_email_in_website_subdomain": "Email in Website Subdomain",
+      "domain_of_website_in_email_subdomain": "Website in Email Subdomain",
+      "email_is_subdomain_of_website_domain": "Email is Subdomain of Website",
+      "fully_qualified_domain_name_match": "FQDN Match",
+      "subdomain_mismatch": "Subdomain Mismatch",
+      "total": "Total Score",
+      "website_is_subdomain_of_email_domain": "Website is Subdomain of Email",
+      "whois_bonus": "WHOIS Bonus"
+    },
+    "base": {
+      "perfect_match": "Perfect Match",
+      "match": "Match",
+      "count": "Count",
+      "avg_rank": "Avg Rank",
+      "cumulative": "Cumulative",
+      "attributes_w_perfect_match": "Attributes w/ perfect match",
+      "cumulative_rank": "Cumulative Rank",
+      "difference": "Difference"
+    }
+  },
+  "ui": {
+    "labels": {
+      "name": "Name",
+      "attributes": "Attributes",
+      "affiliations": "Affiliations",
+      "emails": "Emails",
+      "overall": "Overall",
+      "domain": "Domain",
+      "orcid": "ORCID",
+      "loading": "Loading...",
+      "reload": "Reload",
+      "get_relation_graph": "Get relation graph",
+      "click_to_open_ror": "Click to open ROR page",
+      "authors": "Authors",
+      "reviewers": "Reviewers",
+      "loading_authors": "Loading Authors...",
+      "get_json_data": "Get JSON Data",
+      "reload_all": "Reload All",
+      "show_details": "Show Details",
+      "hide_details": "Hide Details",
+      "load_json_report": "Load JSON Report",
+      "invalid_json_file": "Invalid JSON file.",
+      "no_authors_found": "No authors found",
+      "no_reviewers_found": "No reviewers found",
+      "no_results_backend": "No new results returned from backend",
+      "unknown_error": "Unknown error"
+    },
+    "tabs": {
+      "authors_and_reviewers": "Authors and Reviewers",
+      "report_preview": "Report Preview",
+      "settings": "Settings",
+      "bona_fide": "Bona Fide"
+    },
+    "settings": {
+      "backend_base_url": "Backend Base URL",
+      "time_limit_polling": "Time limit for backend polling",
+      "language": "Language",
+      "clear_cache": "Clear cache"
+    }
+  }
+}

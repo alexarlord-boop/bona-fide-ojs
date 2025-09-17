@@ -1,0 +1,68 @@
+{
+    "scores": {
+        "ror": {
+            "crossref_bonus": "Crossref 加分",
+            "dns_similarity_bonus": "DNS 相似度加分",
+            "dns_verification_bonus": "DNS 验证加分",
+            "domain_match": "域名匹配",
+            "domain_of_email_in_website_subdomain": "邮箱在网站子域名中",
+            "domain_of_website_in_email_subdomain": "网站在邮箱子域名中",
+            "email_is_subdomain_of_website_domain": "邮箱是网站域名的子域",
+            "fully_qualified_domain_name_match": "完全限定域名匹配",
+            "subdomain_mismatch": "子域名不匹配",
+            "total": "总分",
+            "website_is_subdomain_of_email_domain": "网站是邮箱域名的子域",
+            "whois_bonus": "WHOIS 加分"
+        },
+        "base": {
+            "perfect_match": "完全匹配",
+            "match": "匹配",
+            "count": "数量",
+            "avg_rank": "平均排名",
+            "cumulative": "累计",
+            "attributes_w_perfect_match": "具有完全匹配的属性",
+            "cumulative_rank": "累计排名",
+            "difference": "差异"
+        }
+    },
+    "ui": {
+        "labels": {
+            "name": "名称",
+            "attributes": "属性",
+            "affiliations": "隶属机构",
+            "emails": "邮箱",
+            "overall": "总体",
+            "domain": "域名",
+            "orcid": "ORCID",
+            "loading": "加载中...",
+            "reload": "重新加载",
+            "get_relation_graph": "获取关系图",
+            "click_to_open_ror": "点击打开 ROR 页面",
+            "authors": "作者",
+            "reviewers": "审稿人",
+            "loading_authors": "正在加载作者...",
+            "get_json_data": "获取 JSON 数据",
+            "reload_all": "全部重新加载",
+            "show_details": "显示详情",
+            "hide_details": "隐藏详情",
+            "load_json_report": "加载 JSON 报告",
+            "invalid_json_file": "无效的 JSON 文件。",
+            "no_authors_found": "未找到作者",
+            "no_reviewers_found": "未找到审稿人",
+            "no_results_backend": "后端未返回新结果",
+            "unknown_error": "未知错误"
+        },
+        "tabs": {
+            "authors_and_reviewers": "作者与审稿人",
+            "report_preview": "报告预览",
+            "settings": "设置",
+            "bona_fide": "合法性"
+        },
+        "settings": {
+            "backend_base_url": "后端基础 URL",
+            "time_limit_polling": "后端轮询时间限制",
+            "language": "语言",
+            "clear_cache": "清除缓存"
+        }
+    }
+}
