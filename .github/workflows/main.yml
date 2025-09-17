@@ -1,0 +1,82 @@
+name: Build OJS plugin ZIP
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      plugin_name:
+        description: 'Plugin folder/name (used for zip filename and top-level folder)'
+        required: false
+        default: 'plugin-name'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+    env:
+      UI_DIR: trustScoreUI
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install & build trustScoreUI (Vite)
+        working-directory: ${{ env.UI_DIR }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prepare artefacts folder
+        run: |
+          PLUGIN="${{ inputs.plugin_name || 'plugin-name' }}"
+          echo "Using plugin name: $PLUGIN"
+          rm -rf artefacts
+          mkdir -p "artefacts/$PLUGIN"
+
+          # copy built files (only build/ subdir)
+          if [ -d "${{ env.UI_DIR }}/dist/build" ]; then
+            cp -r "${{ env.UI_DIR }}/dist/build" "artefacts/$PLUGIN/"
+          else
+            echo "ERROR: ${ env.UI_DIR }/dist/build not found. Build may have failed."
+            exit 1
+          fi
+
+          # copy php wrapper
+          if [ -f "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" ]; then
+            cp "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" "artefacts/$PLUGIN/"
+          else
+            echo "ERROR: ${ env.UI_DIR }/TrustScoreUIPlugin.php not found."
+            exit 1
+          fi
+
+          # copy version.xml
+          if [ -f "${{ env.UI_DIR }}/version.xml" ]; then
+            cp "${{ env.UI_DIR }}/version.xml" "artefacts/$PLUGIN/"
+          else
+            echo "ERROR: ${ env.UI_DIR }/version.xml not found."
+            exit 1
+          fi
+
+      - name: Create plugin zip archive
+        run: |
+          PLUGIN="${{ inputs.plugin_name || 'plugin-name' }}"
+          ZIP_NAME="${PLUGIN}.zip"
+          (cd artefacts && zip -r "../${ZIP_NAME}" "$PLUGIN")
+          ls -lh "${ZIP_NAME}"
+          echo "Created ${ZIP_NAME}"
+
+      - name: Upload zip as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.plugin_name || 'plugin-name' }}-zip
+          path: ./${{ inputs.plugin_name || 'plugin-name' }}.zip
+          retention-days: 7
