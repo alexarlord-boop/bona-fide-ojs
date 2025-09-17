@@ -50,7 +50,8 @@ jobs:
       - name: Create plugin tar.gz archive
         run: |
           ARCHIVE_NAME="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}.tar.gz"
-          tar -czvf "$ARCHIVE_NAME" artefacts/
+          # use -C to move into the directory containing artefacts
+          tar -czvf "$ARCHIVE_NAME" -C "$GITHUB_WORKSPACE" artefacts
           ls -lh "$ARCHIVE_NAME"
           echo "Created $ARCHIVE_NAME"
 
