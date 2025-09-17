@@ -66,9 +66,8 @@ jobs:
 
       - name: Create plugin tar.gz archive
         run: |
-          PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
-          ARCHIVE_NAME="${PLUGIN}.tar.gz"
-          tar -czvf "$ARCHIVE_NAME" -C artefacts "$PLUGIN"
+          ARCHIVE_NAME="TrustScoreUIPlugin.tar.gz"
+          tar -czvf "$ARCHIVE_NAME" artefacts/
           ls -lh "$ARCHIVE_NAME"
           echo "Created $ARCHIVE_NAME"
 
