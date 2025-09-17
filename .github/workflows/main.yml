@@ -51,7 +51,7 @@ jobs:
         run: |
           PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
           ARCHIVE_NAME="${PLUGIN}.tar.gz"
-          tar -czvf "$ARCHIVE_NAME" artefacts/
+          tar -czvf "$ARCHIVE_NAME" -C artefacts "$PLUGIN"
           ls -lh "$ARCHIVE_NAME"
           echo "Created $ARCHIVE_NAME"
 
