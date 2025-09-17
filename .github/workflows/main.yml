@@ -66,10 +66,12 @@ jobs:
 
       - name: Create plugin tar.gz archive
         run: |
-          ARCHIVE_NAME="TrustScoreUIPlugin.tar.gz"
+          PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
+          ARCHIVE_NAME="${PLUGIN}.tar.gz"
           tar -czvf "$ARCHIVE_NAME" artefacts/
           ls -lh "$ARCHIVE_NAME"
           echo "Created $ARCHIVE_NAME"
+
 
       - name: Upload tar.gz as workflow artifact
         uses: actions/upload-artifact@v4
