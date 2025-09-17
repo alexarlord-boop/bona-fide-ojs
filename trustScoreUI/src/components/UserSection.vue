@@ -42,7 +42,7 @@
                   <span v-else>↻ {{ t('ui.labels.reload') }}</span>
                 </div>
                 <!--<div class="details-btn">Get PDF report</div>-->
-                <div class="details-btn">{{ t('ui.labels.get_relation_graph') }}</div>
+                <div class="details-btn" @click="showGraphModal(user)">{{ t('ui.labels.get_relation_graph') }}</div>
                 <div v-if="user?.ojsORCID">
                   <strong>{{ t('ui.labels.orcid') }}:</strong>
                   <a :href="user?.ojsORCID" target="_blank">{{ user?.ojsORCID }}</a>
@@ -99,15 +99,21 @@
           </transition>
         </div>
       </div>
+      <RelationGraph
+          :isVisible="isGraphVisible"
+          :centerNodeName="currentCenterNodeName"
+          @close="closeGraphModal"
+      />
     </div>
 
   </template>
   
   <script setup>
-  import { computed } from "vue";
+  import { computed, ref } from "vue";
   import {convertRorScoreToBreakdown, convertBaseScoreBreakdown} from '../utils/scoresToBarConverter.js';
   import { useLocale } from '../composables/useLocale.js';
 
+  import RelationGraph from './RelationGraph.vue';
   import ScoreBar from './ScoreBar.vue';
   
   const { getScoreLabel, t } = useLocale();
@@ -136,6 +142,22 @@
     return max;
   });
 
+  const isGraphVisible = ref(false);
+  const currentCenterNodeName = ref('');
+
+  function showGraphModal(user) {
+    console.log("CLICKED!");
+    console.log(user);
+
+    let centerNodeName = user?.ojsName || 'Unknown User';
+
+    currentCenterNodeName.value = centerNodeName;
+    isGraphVisible.value = true;
+  }
+
+  function closeGraphModal() {
+    isGraphVisible.value = false;
+  }
 
   function convertSubscoresToArray(subscores) {
     const converted = {};

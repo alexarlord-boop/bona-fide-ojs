@@ -24,6 +24,9 @@
   },
   "dependencies": {
     "@formatjs/intl": "^3.1.6",
+    "d3-drag": "^3.0.0",
+    "d3-force": "^3.0.0",
+    "d3-selection": "^3.0.0",
     "jose": "^6.0.13",
     "jspdf": "^3.0.1",
     "vue": "^3.5.17",
