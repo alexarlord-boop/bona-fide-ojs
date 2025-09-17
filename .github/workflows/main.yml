@@ -40,11 +40,11 @@ jobs:
           rm -rf artefacts
           mkdir -p "artefacts/$PLUGIN"
 
-          # copy built files (only build/ subdir)
-          if [ -d "${{ env.UI_DIR }}/dist/build" ]; then
-            cp -r "${{ env.UI_DIR }}/dist/build" "artefacts/$PLUGIN/"
+          # copy built files
+          if [ -d "${{ env.UI_DIR }}/dist" ]; then
+            cp -r "${{ env.UI_DIR }}/dist" "artefacts/$PLUGIN/"
           else
-            echo "ERROR: ${ env.UI_DIR }/dist/build not found. Build may have failed."
+            echo "ERROR: ${ env.UI_DIR }/dist not found. Build may have failed."
             exit 1
           fi
 
