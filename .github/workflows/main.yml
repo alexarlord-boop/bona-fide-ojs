@@ -1,12 +1,12 @@
-name: Build OJS plugin ZIP
+name: Build OJS plugin tar.gz
 
 on:
   workflow_dispatch:
     inputs:
       plugin_name:
-        description: 'Plugin folder/name (used for zip filename and top-level folder)'
+        description: 'Plugin folder/name (used for tar.gz filename and top-level folder)'
         required: false
-        default: 'plugin-name'
+        default: 'TrustScoreUIPlugin'
 
 permissions:
   contents: read
@@ -35,12 +35,12 @@ jobs:
 
       - name: Prepare artefacts folder
         run: |
-          PLUGIN="${{ inputs.plugin_name || 'plugin-name' }}"
+          PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
           echo "Using plugin name: $PLUGIN"
           rm -rf artefacts
           mkdir -p "artefacts/$PLUGIN"
 
-          # copy built files
+          # copy entire dist folder
           if [ -d "${{ env.UI_DIR }}/dist" ]; then
             cp -r "${{ env.UI_DIR }}/dist" "artefacts/$PLUGIN/"
           else
@@ -64,17 +64,17 @@ jobs:
             exit 1
           fi
 
-      - name: Create plugin zip archive
+      - name: Create plugin tar.gz archive
         run: |
-          PLUGIN="${{ inputs.plugin_name || 'plugin-name' }}"
-          ZIP_NAME="${PLUGIN}.zip"
-          (cd artefacts && zip -r "../${ZIP_NAME}" "$PLUGIN")
-          ls -lh "${ZIP_NAME}"
-          echo "Created ${ZIP_NAME}"
+          PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
+          ARCHIVE_NAME="${PLUGIN}.tar.gz"
+          tar -czvf "$ARCHIVE_NAME" -C artefacts "$PLUGIN"
+          ls -lh "$ARCHIVE_NAME"
+          echo "Created $ARCHIVE_NAME"
 
-      - name: Upload zip as workflow artifact
+      - name: Upload tar.gz as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.plugin_name || 'plugin-name' }}-zip
-          path: ./${{ inputs.plugin_name || 'plugin-name' }}.zip
+          name: ${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}-tar
+          path: ./${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}.tar.gz
           retention-days: 7
