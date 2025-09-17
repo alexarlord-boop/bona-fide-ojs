@@ -41,11 +41,11 @@ jobs:
           PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
           echo "Using plugin name: $PLUGIN"
           rm -rf artefacts
-          mkdir -p "artefacts/$PLUGIN"
+          mkdir -p "artefacts/"
 
-          cp -r "${{ env.UI_DIR }}/dist" "artefacts/$PLUGIN/"
-          cp "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" "artefacts/$PLUGIN/"
-          cp "${{ env.UI_DIR }}/version.xml" "artefacts/$PLUGIN/"
+          cp -r "${{ env.UI_DIR }}/dist" "artefacts/"
+          cp "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" "artefacts/"
+          cp "${{ env.UI_DIR }}/version.xml" "artefacts/"
 
       - name: Create plugin tar.gz archive
         run: |
