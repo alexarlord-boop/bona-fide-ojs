@@ -7,9 +7,12 @@ on:
         description: 'Plugin folder/name (used for tar.gz filename and top-level folder)'
         required: false
         default: 'TrustScoreUIPlugin'
+      release_tag:
+        description: 'Git tag for the release'
+        required: true
 
 permissions:
-  contents: read
+  contents: write  # needed to create release and upload asset
 
 jobs:
   build-and-package:
@@ -40,29 +43,9 @@ jobs:
           rm -rf artefacts
           mkdir -p "artefacts/$PLUGIN"
 
-          # copy entire dist folder
-          if [ -d "${{ env.UI_DIR }}/dist" ]; then
-            cp -r "${{ env.UI_DIR }}/dist" "artefacts/$PLUGIN/"
-          else
-            echo "ERROR: ${ env.UI_DIR }/dist not found. Build may have failed."
-            exit 1
-          fi
-
-          # copy php wrapper
-          if [ -f "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" ]; then
-            cp "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" "artefacts/$PLUGIN/"
-          else
-            echo "ERROR: ${ env.UI_DIR }/TrustScoreUIPlugin.php not found."
-            exit 1
-          fi
-
-          # copy version.xml
-          if [ -f "${{ env.UI_DIR }}/version.xml" ]; then
-            cp "${{ env.UI_DIR }}/version.xml" "artefacts/$PLUGIN/"
-          else
-            echo "ERROR: ${ env.UI_DIR }/version.xml not found."
-            exit 1
-          fi
+          cp -r "${{ env.UI_DIR }}/dist" "artefacts/$PLUGIN/"
+          cp "${{ env.UI_DIR }}/TrustScoreUIPlugin.php" "artefacts/$PLUGIN/"
+          cp "${{ env.UI_DIR }}/version.xml" "artefacts/$PLUGIN/"
 
       - name: Create plugin tar.gz archive
         run: |
@@ -72,10 +55,18 @@ jobs:
           ls -lh "$ARCHIVE_NAME"
           echo "Created $ARCHIVE_NAME"
 
-
-      - name: Upload tar.gz as workflow artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          name: ${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}-tar
-          path: ./${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}.tar.gz
-          retention-days: 7
+          tag: ${{ inputs.release_tag }}
+          name: ${{ inputs.release_tag }}
+          body: "Automated release of ${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}."
+          draft: false
+          prerelease: false
+
+      - name: Upload tar.gz to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
