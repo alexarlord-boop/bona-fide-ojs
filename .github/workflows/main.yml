@@ -61,10 +61,12 @@ jobs:
           echo "--- Archive content ---"
           tar -tzf "$ARCHIVE_NAME"
      
-      - name: Create GitHub Release with artifact
+      - name: Create or update GitHub Release with artifact
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ inputs.release_tag }}
           name: ${{ inputs.release_tag }}
           body: "Automated release of ${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}."
-          files: ./TrustScoreUIPlugin.tar.gz
+          artifacts: ./TrustScoreUIPlugin.tar.gz
+          skipIfReleaseExists: false             
+
