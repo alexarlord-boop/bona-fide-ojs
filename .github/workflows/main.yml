@@ -60,10 +60,11 @@ jobs:
           ls -lh "$ARCHIVE_NAME"
           echo "--- Archive content ---"
           tar -tzf "$ARCHIVE_NAME"
-
-      - name: Upload tar.gz to release
-        uses: softprops/action-gh-release@v1
+     
+      - name: Create GitHub Release with artifact
+        uses: ncipollo/release-action@v1
         with:
-          files: ./${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ inputs.release_tag }}
+          name: ${{ inputs.release_tag }}
+          body: "Automated release of ${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}."
+          files: ./TrustScoreUIPlugin.tar.gz
