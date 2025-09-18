@@ -52,7 +52,7 @@ jobs:
           PLUGIN="${{ inputs.plugin_name || 'TrustScoreUIPlugin' }}"
           ARCHIVE_NAME="${PLUGIN}.tar.gz"
 
-          tar -czvf "$ARCHIVE_NAME" -C "$(pwd)" artefacts
+          tar -czvf "$ARCHIVE_NAME" artefacts
           ls -lh "$ARCHIVE_NAME"
 
       - name: Create GitHub Release
