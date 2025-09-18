@@ -25,6 +25,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          ref: ${{ inputs.release_tag }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
