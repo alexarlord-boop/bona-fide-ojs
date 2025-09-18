@@ -54,6 +54,8 @@ jobs:
 
           tar -czvf "$ARCHIVE_NAME" artefacts
           ls -lh "$ARCHIVE_NAME"
+          echo "--- Archive content ---"
+          tar -tzf "$ARCHIVE_NAME"
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
