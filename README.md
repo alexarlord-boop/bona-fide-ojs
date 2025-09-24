@@ -74,6 +74,8 @@ tar -czvf plugin-name.tar.gz artefacts/
 - Upgrade: change version.xml with new metadata > generate new file > "Upgrade" via option of the plugin followign `Settings > Website > Plugins`.
 - Reupload: delete plugin and upload as brand new without version change.
 
+## Related projects
+This plugin integrates with other components developed as parts of the GÉANT Trust & Identity Incubator. The scoring business logic is implemented on the backend side in [this GitHub repository](https://github.com/PeterBolha/bona-fide-researcher). The Bona Fide OJS plugin could be used as an example of a custom [PKP OJS generic plugin extension](https://docs.pkp.sfu.ca/plugin-inventory/en/).
 
 # Preview
 ### Local docker setup: C1 and C3:
