@@ -81,3 +81,11 @@ tar -czvf plugin-name.tar.gz artefacts/
 
 ### Settings Tab:
 ![actors](plugin-tab3.png)
+
+
+      |
+  \  ___  /                           _________
+ _  /   \  _    GÉANT                 |  * *  | Co-Funded by
+    | ~ |       Trust & Identity      | *   * | the European
+     \_/        Incubator             |__*_*__| Union
+      =
