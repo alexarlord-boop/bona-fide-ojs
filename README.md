@@ -1,4 +1,4 @@
-# Bona Fide Plugin
+# Bona Fide OJS Plugin
 
 ```
       |
