@@ -1,5 +1,14 @@
 # Bona Fide Plugin
 
+```
+      |
+  \  ___  /                           _________
+ _  /   \  _    GÉANT                 |  * *  | Co-Funded by
+    | ~ |       Trust & Identity      | *   * | the European
+     \_/        Incubator             |__*_*__| Union
+      =
+```
+
 The **Bona Fide Plugin** is an OJS extension designed to enhance the workflow of journal editors by integrating scoring functionality for authors and reviewers. It provides a user interface to display various scores directly within the OJS submission page, enabling editors to make informed decisions during the review process and mitigate manual overheads related to vetting the submission actors.
 
 _Caution: during the plugin development for OJS v3.4.+ a migration to a newer v3.5.+ occured. You can still find the older version plugin branch with hooks usage and custom JS UI embedding examples, but it is considered obsolete._
@@ -81,11 +90,3 @@ tar -czvf plugin-name.tar.gz artefacts/
 
 ### Settings Tab:
 ![actors](plugin-tab3.png)
-
-
-      |
-  \  ___  /                           _________
- _  /   \  _    GÉANT                 |  * *  | Co-Funded by
-    | ~ |       Trust & Identity      | *   * | the European
-     \_/        Incubator             |__*_*__| Union
-      =
